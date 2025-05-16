@@ -6,6 +6,8 @@ import { Toaster } from "sonner";
 import FontAwesomeConfig from "./fontawesome";
 import "./globals.css";
 import { Providers } from "./providers";
+import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
 
 const kanit = Kanit({
   subsets: ["latin", "vietnamese", "thai"],
@@ -65,10 +67,12 @@ export default async function RootLayout({
         className={`${kanit.className} antialiased bg-white`}
       >
         <Providers session={session}>
-          <Toaster richColors closeButton position="top-right" />
-          <SessionUserProvider initialSession={session}>
-            <LanguageProvider>{children}</LanguageProvider>
-          </SessionUserProvider>
+          <Theme>
+            <Toaster richColors closeButton position="top-right" />
+            <SessionUserProvider initialSession={session}>
+              <LanguageProvider>{children}</LanguageProvider>
+            </SessionUserProvider>
+          </Theme>
         </Providers>
       </body>
     </html>

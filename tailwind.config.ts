@@ -10,11 +10,21 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px'
+      }
+    },
     extend: {
       fontFamily: {
         kanit,
       },
       colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: "var(--primary)",
@@ -35,29 +45,62 @@ const config: Config = {
           blue: "#0078FF",
           background: "#f0f4fd",
         },
-      },
-      boxShadow: {
-        panel: "0 0 1.5rem 0 rgba(25,72,142,.15)",
-        megaMenu:
-          "0 1px 1px hsl(333deg 0% 50% / 15%), 0 2px 2px hsl(333deg 0% 50% / 15%), 0 4px 4px hsl(333deg 0% 50% / 15%), 0 8px 8px hsl(333deg 0% 50% / 15%), 0 16px 16px hsl(333deg 0% 50% / 15%), 0 32px 32px hsl(333deg 0% 50% / 15%), 0 64px 64px hsl(333deg 0% 50% / 15%)",
-        categoryMenu: "0 4px 12px 0 rgba(43, 43, 43, .1)",
-        subMenu: "0 0 1.5rem 0 rgba(25, 72, 142, .15)",
-        toggle: "0 0 7px rgba(0, 0, 0, .5)",
-        jobCard:
-          "0 1px 1px hsl(333deg 0% 50% /7.5%),0 2px 2px hsl(333deg 0% 50% /7.5%),0 4px 4px hsl(333deg 0% 50% /7.5%),0 8px 8px hsl(333deg 0% 50% /7.5%),0 16px 16px hsl(333deg 0% 50% /7.5%)",
-        filterSection: "0 4px 12px 0 rgba(43, 43, 43, .1)",
-        inputShadow: "box-shadow: 0 0 0 .175em hsl(5 85% 94%)",
-        recipeShadow:
-          "0 1px 1px hsl(333deg 0% 50% /7.5%),0 2px 2px hsl(333deg 0% 50% /7.5%),0 4px 4px hsl(333deg 0% 50% /7.5%),0 8px 8px hsl(333deg 0% 50% /7.5%),0 16px 16px hsl(333deg 0% 50% /7.5%)",
-        memberShipShadow:
-          "0 10px 40px -4px rgba(19, 55, 109, 0.08), 0 8px 22px -6px rgba(19, 55, 109, 0.1);",
-        topWorkShadow: "0 0 1.5rem 0 rgba(24, 85, 184, .25);",
-        reviewShadow: "0 0 1.5rem 0 rgba(24, 85, 184, .1);",
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))'
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))'
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))'
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))'
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))'
+        },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))'
+        },
+        admin: {
+          'purple': '#6E59A5',
+          'light-purple': '#E5DEFF',
+          'dark': '#1A1F2C',
+          'blue': '#0EA5E9',
+          'light-gray': '#F1F0FB',
+          'gray': '#8E9196',
+        }
       },
       borderWidth: {
         1: "1px",
       },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
       keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
         "fade-in": {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },

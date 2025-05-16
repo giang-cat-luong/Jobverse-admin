@@ -1,0 +1,261 @@
+
+import { CatalogData, FreelancerApplication, MembershipLevel } from "@/types/admin";
+
+export const mockFreelancerApplications: FreelancerApplication[] = [
+  {
+    id: "1",
+    sourceTypes: ["google", "instagram"],
+    avatar_url: "https://fastwork.ibrowe.com/api/v4/image/f893b4b7-bb63-4699-a162-b66fe28e54f8.png",
+    username: "giang.cat.luongg24",
+    display_name: "giang.cat.luongg22",
+    bio: "hello im giang\n",
+    freelancer_type: "Parttime",
+    apply_fee: false,
+    birth_date: "2007-10-18",
+    email: "vutruonggiang452002@gmail.com",
+    countryType: "Thailand",
+    country: "Thailand",
+    card_number: "2232323232322",
+    card_address_details: "208 nak niwat 8 alley",
+    card_zip_code: "23000",
+    card_subdistrict_or_district: "ท่ากุ่ม",
+    card_district_or_subdistrict: "เมืองตราด",
+    card_province: "ตราด",
+    front_card: "https://fastwork.ibrowe.com/api/v4/image/b98c49cf-fa2b-4c86-9421-b804df33f6e4.jpeg",
+    back_card: "https://fastwork.ibrowe.com/api/v4/image/9e814e1c-c709-44de-822e-fa630d432a08.jpeg",
+    title: "นาย",
+    name: "Vũ",
+    surname: "Giang",
+    address_details: "Phường Hiệp Phú, Quận 9",
+    province: "ลำพูน",
+    subdistrict_or_district: "ในเมือง",
+    district_or_subdistrict: "เมืองลำพูน",
+    zip_code: "51000",
+    payment_status: "pending",
+    application_status: "pending",
+    created_at: "2023-05-15T09:30:00Z"
+  },
+  {
+    id: "2",
+    sourceTypes: ["facebook"],
+    avatar_url: "https://fastwork.ibrowe.com/api/v4/image/random-avatar-1.png",
+    username: "somchai.dev",
+    display_name: "Somchai D.",
+    bio: "Full stack developer with 5 years experience",
+    freelancer_type: "Fulltime",
+    apply_fee: true,
+    birth_date: "1990-04-12",
+    email: "somchai.dev@example.com",
+    countryType: "Thailand",
+    country: "Thailand",
+    card_number: "1122334455667",
+    card_address_details: "123 Sukhumvit Road",
+    card_zip_code: "10110",
+    card_subdistrict_or_district: "คลองเตย",
+    card_district_or_subdistrict: "คลองเตย",
+    card_province: "กรุงเทพมหานคร",
+    front_card: "https://fastwork.ibrowe.com/api/v4/image/front-card-example.jpeg",
+    back_card: "https://fastwork.ibrowe.com/api/v4/image/back-card-example.jpeg",
+    title: "นาย",
+    name: "สมชาย",
+    surname: "ใจดี",
+    address_details: "123/45 Sukhumvit Residence",
+    province: "กรุงเทพมหานคร",
+    subdistrict_or_district: "คลองเตย",
+    district_or_subdistrict: "คลองเตย",
+    zip_code: "10110",
+    payment_status: "verified",
+    application_status: "pending",
+    created_at: "2023-05-10T14:20:00Z"
+  },
+  {
+    id: "3",
+    sourceTypes: ["linkedin"],
+    avatar_url: "https://fastwork.ibrowe.com/api/v4/image/random-avatar-2.png",
+    username: "thai.designer",
+    display_name: "Thai Design Pro",
+    bio: "Professional UI/UX designer specialized in mobile apps",
+    freelancer_type: "Parttime",
+    apply_fee: true,
+    birth_date: "1995-08-22",
+    email: "thai.designer@example.com",
+    countryType: "Thailand",
+    country: "Thailand",
+    card_number: "9988776655443",
+    card_address_details: "45 Silom Road",
+    card_zip_code: "10500",
+    card_subdistrict_or_district: "สีลม",
+    card_district_or_subdistrict: "บางรัก",
+    card_province: "กรุงเทพมหานคร",
+    front_card: "https://fastwork.ibrowe.com/api/v4/image/front-card-example-2.jpeg",
+    back_card: "https://fastwork.ibrowe.com/api/v4/image/back-card-example-2.jpeg",
+    title: "นาง",
+    name: "สุนิสา",
+    surname: "ศิลปิน",
+    address_details: "45/67 Silom Complex",
+    province: "กรุงเทพมหานคร",
+    subdistrict_or_district: "สีลม",
+    district_or_subdistrict: "บางรัก",
+    zip_code: "10500",
+    payment_status: "rejected",
+    application_status: "rejected",
+    created_at: "2023-05-08T11:15:00Z"
+  },
+  {
+    id: "4",
+    sourceTypes: ["twitter", "linkedin"],
+    avatar_url: "https://fastwork.ibrowe.com/api/v4/image/random-avatar-3.png",
+    username: "marketing.guru",
+    display_name: "Marketing Expert TH",
+    bio: "Digital marketing specialist with focus on SEO and SEM",
+    freelancer_type: "Fulltime",
+    apply_fee: true,
+    birth_date: "1988-12-03",
+    email: "marketing.guru@example.com",
+    countryType: "Thailand",
+    country: "Thailand",
+    card_number: "5544332211009",
+    card_address_details: "88 Ratchadaphisek Road",
+    card_zip_code: "10400",
+    card_subdistrict_or_district: "ห้วยขวาง",
+    card_district_or_subdistrict: "ห้วยขวาง",
+    card_province: "กรุงเทพมหานคร",
+    front_card: "https://fastwork.ibrowe.com/api/v4/image/front-card-example-3.jpeg",
+    back_card: "https://fastwork.ibrowe.com/api/v4/image/back-card-example-3.jpeg",
+    title: "นาย",
+    name: "วิชัย",
+    surname: "นักการตลาด",
+    address_details: "88/99 Ratchada Residence",
+    province: "กรุงเทพมหานคร",
+    subdistrict_or_district: "ห้วยขวาง",
+    district_or_subdistrict: "ห้วยขวาง",
+    zip_code: "10400",
+    payment_status: "verified",
+    application_status: "approved",
+    created_at: "2023-05-05T16:45:00Z"
+  }
+];
+
+export const mockCatalogData: CatalogData = {
+  service_catalogs: [
+    {
+      id: "5e1afe75-c25f-4c3e-9dd7-112d1b4433d5",
+      name: "Popular service",
+      image: null,
+      sections: [
+        {
+          section_title: "Popular service",
+          categories: [
+            {
+              id: "4652f55b-34f8-4311-8acf-5c654be8168b",
+              name: "Accountant",
+              image: null
+            },
+            {
+              id: "fbb8e5d9-115a-4080-a89e-96708dca404a",
+              name: "Illustration",
+              image: null
+            },
+            {
+              id: "c0f1e182-84c5-4882-9797-339c443fc5ec",
+              name: "Making animation",
+              image: null
+            },
+            {
+              id: "a1f7ba4b-e708-401c-809b-cac04dd80b95",
+              name: "Marketing",
+              image: null
+            },
+            {
+              id: "3048a5e7-d761-47f1-ae59-b42b00535c8f",
+              name: "IT",
+              image: null
+            },
+            {
+              id: "afdd8f40-a60d-4609-9718-58110e80f4bb",
+              name: "Web Development",
+              image: null
+            },
+            {
+              id: "1f484673-73d0-4782-9ea1-63c69c8e2c66",
+              name: "Website content",
+              image: null
+            },
+            {
+              id: "b899cee9-83dd-4a27-9dc2-b304c1feb37f",
+              name: "Thai to English",
+              image: null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "25aa3381-0be9-4103-81d8-844b8be7bc90",
+      name: "Advise",
+      image: null,
+      sections: [
+        {
+          section_title: "Business and Finance",
+          categories: [
+            {
+              id: "c998cdb4-2f29-4271-920d-e5526393d8ff",
+              name: "Business registration",
+              image: null
+            },
+            {
+              id: "c5ad5ef0-3f9c-4719-a834-2f42d26f475b",
+              name: "Business Consulting",
+              image: null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+export const mockMembershipLevels: MembershipLevel[] = [
+  {
+    id: "34c332dc-df02-4c32-a1cc-d67039718819",
+    level: "Member",
+    min_income: "0.00",
+    max_income: "14999.99",
+    service_fee: "17.00"
+  },
+  {
+    id: "c3b64625-29ae-4bfe-afcd-9f3dbdd244de",
+    level: "Bronze",
+    min_income: "15000.00",
+    max_income: "49999.99",
+    service_fee: "16.00"
+  },
+  {
+    id: "af281c38-fd7c-43f3-8689-b40d8abe508b",
+    level: "Silver",
+    min_income: "50000.00",
+    max_income: "99999.99",
+    service_fee: "14.00"
+  },
+  {
+    id: "594b004b-0e19-4d9e-bce9-3b207c4a7cb5",
+    level: "Gold",
+    min_income: "100000.00",
+    max_income: "499999.99",
+    service_fee: "12.00"
+  },
+  {
+    id: "95478259-ddd0-419e-8ff5-7df564b5f8ca",
+    level: "Platinum",
+    min_income: "500000.00",
+    max_income: "999999.99",
+    service_fee: "11.00"
+  },
+  {
+    id: "dcb9f14d-2ed3-40a6-a021-8d673061ca42",
+    level: "Diamond",
+    min_income: "1000000.00",
+    max_income: null,
+    service_fee: "10.00"
+  }
+];

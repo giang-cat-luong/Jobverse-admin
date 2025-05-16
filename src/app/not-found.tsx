@@ -2,46 +2,10 @@
 import Loading from "@/components/Loading";
 import { AdminImage, CategoriesImage, LandingImage } from "@/constants/images";
 import { LanguageFile } from "@/constants/language";
-import SpSellerHeader from "@/containers/SpHeaderSeller";
 import { useGlobalTranslate } from "@/hooks/translation/useGlobalTranslate";
 import { Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const category_images = [
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-  {
-    image: CategoriesImage.seo_image,
-    title: "ทำ SEO",
-  },
-];
 
 export default function NotFound() {
   const {
@@ -54,7 +18,6 @@ export default function NotFound() {
   if (isError) return <div>Error loading language data</div>;
   return (
     <div className="min-h-screen flex flex-col ">
-      <SpSellerHeader />
       <header className="px-[1rem] flex h-[70px] items-center justify-start bg-primary">
         <div className=" px-4">
           <Link href="/">
