@@ -1,6 +1,6 @@
 "use client";
 import Loading from "@/components/Loading";
-import { AdminImage, CategoriesImage, LandingImage } from "@/constants/images";
+import { AdminImage, LandingImage } from "@/constants/images";
 import { LanguageFile } from "@/constants/language";
 import { useGlobalTranslate } from "@/hooks/translation/useGlobalTranslate";
 import { Home } from "lucide-react";
