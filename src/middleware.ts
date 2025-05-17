@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse, type NextRequest } from "next/server";
 import { auth } from "./auth";
 
@@ -7,8 +6,10 @@ export async function middleware(request: NextRequest) {
 
   const session = await auth();
 
-  if (!session && pathname === "/") {
-    return NextResponse.redirect(new URL("/login?redirect=/", request.url));
+  const protectedRoutes = ["/", "/freelance-request", "/catalog-management", "/membership"];
+
+  if (!session && protectedRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL(`/login?redirect=${pathname}`, request.url));
   }
 
   if (session && pathname === "/login") {
@@ -19,5 +20,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login"],
+  matcher: [
+    "/",
+    "/login",
+    "/freelance-request",
+    "/catalog-management",
+    "/membership",
+  ],
 };

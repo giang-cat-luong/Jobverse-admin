@@ -1,5 +1,6 @@
 "use client";
 import Loading from "@/components/Loading";
+import SellerHeader from "@/components/SellerHeader";
 import { AdminImage, LandingImage } from "@/constants/images";
 import { LanguageFile } from "@/constants/language";
 import { useGlobalTranslate } from "@/hooks/translation/useGlobalTranslate";
@@ -17,24 +18,12 @@ export default function NotFound() {
   if (isLoading) return <Loading />;
   if (isError) return <div>Error loading language data</div>;
   return (
-    <div className="min-h-screen flex flex-col ">
-      <header className="px-[1rem] flex h-[70px] items-center justify-start bg-primary">
-        <div className=" px-4">
-          <Link href="/">
-            <Image
-              src={AdminImage.logo_admin}
-              alt="logo"
-              className="w-full h-full"
-              width={500}
-              height={500}
-            />
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen flex flex-col not-found-gradient ">
+      <SellerHeader/>
 
       {/* Hero section */}
       <main className="flex-grow">
-        <section className="not-found-gradient py-16 px-4">
+        <section className="pb-16 pt-20 px-4 ">
           <div className="container mx-auto max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="fade-in">
