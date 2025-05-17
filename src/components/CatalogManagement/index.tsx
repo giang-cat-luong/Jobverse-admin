@@ -1,8 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import { CatalogData, ServiceCatalog, Section, Category } from "@/types/admin";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -11,33 +14,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Plus, Edit, Trash2, ChevronRight } from "lucide-react";
+import { ChevronRight, Edit, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import useNotification from "@/hooks/useNotification";
+import {
+  Category,
+  Section,
+  ServiceCatalog,
+  ServiceCatalogData,
+} from "@/types/catalog";
+
+import CatalogDialog from "@/app/(admin)/_components/CatalogForm";
+import SectionDialog from "@/app/(admin)/_components/SectionForm";
+import CategoryDialog from "@/app/(admin)/_components/TypeForm";
 
 interface CatalogManagementsProps {
-  catalogData: CatalogData;
+  catalogData: ServiceCatalogData;
 }
 
-export function CatalogManagements({ catalogData }: CatalogManagementsProps) {
+export default function CatalogManagements({
+  catalogData,
+}: CatalogManagementsProps) {
   const { success_message } = useNotification();
-  const [catalogs, setCatalogs] = useState<ServiceCatalog[]>(
-    catalogData.service_catalogs
-  );
+  const [catalogs, setCatalogs] = useState<ServiceCatalog[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
+  const [sectionDialogOpen, setSectionDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+
   const [editingCatalog, setEditingCatalog] = useState<ServiceCatalog | null>(
     null
   );
@@ -50,169 +56,107 @@ export function CatalogManagements({ catalogData }: CatalogManagementsProps) {
     sectionTitle: string;
     category: Category;
   } | null>(null);
-  const [newCatalogName, setNewCatalogName] = useState("");
-  const [newSectionTitle, setNewSectionTitle] = useState("");
-  const [newCategoryName, setNewCategoryName] = useState("");
 
-  // Dialog states
-  const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
-  const [sectionDialogOpen, setSectionDialogOpen] = useState(false);
-  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [currentCatalogId, setCurrentCatalogId] = useState<string>("");
+  const [currentSectionTitle, setCurrentSectionTitle] = useState<string>("");
 
-  // Generate new ID
-  const generateId = () => {
-    return (
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15)
-    );
-  };
+  const generateId = () =>
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
 
-  // Add new catalog
-  const handleAddCatalog = () => {
-    if (!newCatalogName.trim()) {
-      success_message(null, null, `Please enter a catalog name.`);
-      return;
+  useEffect(() => {
+    setHydrated(true);
+    setCatalogs(catalogData.service_catalogs);
+    if (catalogData.service_catalogs.length > 0) {
+      setCurrentCatalogId(catalogData.service_catalogs[0].id);
     }
+  }, [catalogData]);
 
-    const newCatalog: ServiceCatalog = {
-      id: generateId(),
-      name: newCatalogName,
-      image: null,
-      sections: [],
-    };
+  if (!hydrated) return null;
 
-    setCatalogs([...catalogs, newCatalog]);
-    setNewCatalogName("");
-    setCatalogDialogOpen(false);
-
-    success_message(
-      null,
-      null,
-      `Catalog "${newCatalogName}" has been added successfully.`
-    );
-  };
-
-  // Update catalog
-  const handleUpdateCatalog = () => {
-    if (!editingCatalog) return;
-    if (!newCatalogName.trim()) {
-      success_message(null, null, "Please enter a catalog name.");
-      return;
+  const handleAddOrUpdateCatalog = (name: string) => {
+    if (!name.trim())
+      return success_message(null, null, "Please enter a catalog name.");
+    if (editingCatalog) {
+      const updated = catalogs.map((c) =>
+        c.id === editingCatalog.id ? { ...c, name } : c
+      );
+      setCatalogs(updated);
+      success_message(
+        null,
+        null,
+        `Catalog has been updated to "${name}" successfully.`
+      );
+    } else {
+      const newCatalog: ServiceCatalog = {
+        id: generateId(),
+        name,
+        image: null,
+        sections: [],
+      };
+      setCatalogs([...catalogs, newCatalog]);
+      success_message(
+        null,
+        null,
+        `Catalog "${name}" has been added successfully.`
+      );
     }
-
-    const updatedCatalogs = catalogs.map((catalog) =>
-      catalog.id === editingCatalog.id
-        ? { ...catalog, name: newCatalogName }
-        : catalog
-    );
-
-    setCatalogs(updatedCatalogs);
     setEditingCatalog(null);
-    setNewCatalogName("");
     setCatalogDialogOpen(false);
-
-    success_message(
-      null,
-      null,
-      `Catalog has been updated to "${newCatalogName}" successfully.`
-    );
   };
 
-  // Delete catalog
   const handleDeleteCatalog = (id: string) => {
-    const catalogToDelete = catalogs.find((catalog) => catalog.id === id);
-    if (!catalogToDelete) return;
-
-    const updatedCatalogs = catalogs.filter((catalog) => catalog.id !== id);
-    setCatalogs(updatedCatalogs);
-
+    const toDelete = catalogs.find((c) => c.id === id);
+    if (!toDelete) return;
+    setCatalogs(catalogs.filter((c) => c.id !== id));
     success_message(
       null,
       null,
-      `Catalog "${catalogToDelete.name}" has been deleted successfully.`
+      `Catalog "${toDelete.name}" has been deleted successfully.`
     );
   };
 
-  // Add new section to catalog
-  const handleAddSection = (catalogId: string) => {
-    if (!newSectionTitle.trim()) {
-      success_message(null, null, "Please enter a section title.");
-      return;
-    }
-
-    const newSection: Section = {
-      section_title: newSectionTitle,
-      categories: [],
-    };
-
-    const updatedCatalogs = catalogs.map((catalog) =>
-      catalog.id === catalogId
+  const handleAddOrUpdateSection = (title: string) => {
+    if (!title.trim())
+      return success_message(null, null, "Please enter a section title.");
+    const updated = catalogs.map((c) =>
+      c.id === currentCatalogId
         ? {
-            ...catalog,
-            sections: [...catalog.sections, newSection],
+            ...c,
+            sections: editingSection
+              ? c.sections.map((s) =>
+                  s.section_title === editingSection.section.section_title
+                    ? { ...s, section_title: title }
+                    : s
+                )
+              : [...c.sections, { section_title: title, categories: [] }],
           }
-        : catalog
+        : c
     );
-
-    setCatalogs(updatedCatalogs);
-    setNewSectionTitle("");
-    setSectionDialogOpen(false);
-
-    success_message(
-      null,
-      null,
-      `Section "${newSectionTitle}" has been added successfully.`
-    );
-  };
-
-  // Update section
-  const handleUpdateSection = () => {
-    if (!editingSection) return;
-    if (!newSectionTitle.trim()) {
-      success_message(null, null, "Please enter a section title.");
-      return;
-    }
-
-    const updatedCatalogs = catalogs.map((catalog) =>
-      catalog.id === editingSection.catalogId
-        ? {
-            ...catalog,
-            sections: catalog.sections.map((section) =>
-              section.section_title === editingSection.section.section_title
-                ? { ...section, section_title: newSectionTitle }
-                : section
-            ),
-          }
-        : catalog
-    );
-
-    setCatalogs(updatedCatalogs);
+    setCatalogs(updated);
     setEditingSection(null);
-    setNewSectionTitle("");
     setSectionDialogOpen(false);
-
     success_message(
       null,
       null,
-      `Section has been updated to "${newSectionTitle}" successfully.`
+      editingSection
+        ? `Section has been updated to "${title}" successfully.`
+        : `Section "${title}" has been added successfully.`
     );
   };
 
-  // Delete section
   const handleDeleteSection = (catalogId: string, sectionTitle: string) => {
-    const updatedCatalogs = catalogs.map((catalog) =>
-      catalog.id === catalogId
+    const updated = catalogs.map((c) =>
+      c.id === catalogId
         ? {
-            ...catalog,
-            sections: catalog.sections.filter(
-              (section) => section.section_title !== sectionTitle
+            ...c,
+            sections: c.sections.filter(
+              (s) => s.section_title !== sectionTitle
             ),
           }
-        : catalog
+        : c
     );
-
-    setCatalogs(updatedCatalogs);
-
+    setCatalogs(updated);
     success_message(
       null,
       null,
@@ -220,219 +164,111 @@ export function CatalogManagements({ catalogData }: CatalogManagementsProps) {
     );
   };
 
-  // Add new category to section
-  const handleAddCategory = (catalogId: string, sectionTitle: string) => {
-    if (!newCategoryName.trim()) {
-      success_message(null, null, "Please enter a category name.");
-      return;
-    }
-
-    const newCategory: Category = {
-      id: generateId(),
-      name: newCategoryName,
-      image: null,
-    };
-
-    const updatedCatalogs = catalogs.map((catalog) =>
-      catalog.id === catalogId
+  const handleAddOrUpdateCategory = (name: string) => {
+    if (!name.trim())
+      return success_message(null, null, "Please enter a category name.");
+    const updated = catalogs.map((c) =>
+      c.id === currentCatalogId
         ? {
-            ...catalog,
-            sections: catalog.sections.map((section) =>
-              section.section_title === sectionTitle
+            ...c,
+            sections: c.sections.map((s) =>
+              s.section_title === currentSectionTitle
                 ? {
-                    ...section,
-                    categories: [...section.categories, newCategory],
+                    ...s,
+                    categories: editingCategory
+                      ? s.categories.map((cat) =>
+                          cat.id === editingCategory.category.id
+                            ? { ...cat, name }
+                            : cat
+                        )
+                      : [
+                          ...s.categories,
+                          { id: generateId(), name, image: null },
+                        ],
                   }
-                : section
+                : s
             ),
           }
-        : catalog
+        : c
     );
-
-    setCatalogs(updatedCatalogs);
-    setNewCategoryName("");
-    setCategoryDialogOpen(false);
-
-    success_message(
-      null,
-      null,
-      `Category "${newCategoryName}" has been added successfully.`
-    );
-  };
-
-  // Update category
-  const handleUpdateCategory = () => {
-    if (!editingCategory) return;
-    if (!newCategoryName.trim()) {
-      success_message(null, null, `Please enter a category name.`);
-      return;
-    }
-
-    const updatedCatalogs = catalogs.map((catalog) =>
-      catalog.id === editingCategory.catalogId
-        ? {
-            ...catalog,
-            sections: catalog.sections.map((section) =>
-              section.section_title === editingCategory.sectionTitle
-                ? {
-                    ...section,
-                    categories: section.categories.map((category) =>
-                      category.id === editingCategory.category.id
-                        ? { ...category, name: newCategoryName }
-                        : category
-                    ),
-                  }
-                : section
-            ),
-          }
-        : catalog
-    );
-
-    setCatalogs(updatedCatalogs);
+    setCatalogs(updated);
     setEditingCategory(null);
-    setNewCategoryName("");
     setCategoryDialogOpen(false);
-
     success_message(
       null,
       null,
-      `Category has been updated to "${newCategoryName}" successfully.`
+      editingCategory
+        ? `Category has been updated to "${name}" successfully.`
+        : `Category "${name}" has been added successfully.`
     );
   };
 
-  // Delete category
   const handleDeleteCategory = (
     catalogId: string,
     sectionTitle: string,
     categoryId: string
   ) => {
-    const updatedCatalogs = catalogs.map((catalog) =>
-      catalog.id === catalogId
+    const updated = catalogs.map((c) =>
+      c.id === catalogId
         ? {
-            ...catalog,
-            sections: catalog.sections.map((section) =>
-              section.section_title === sectionTitle
+            ...c,
+            sections: c.sections.map((s) =>
+              s.section_title === sectionTitle
                 ? {
-                    ...section,
-                    categories: section.categories.filter(
-                      (category) => category.id !== categoryId
+                    ...s,
+                    categories: s.categories.filter(
+                      (cat) => cat.id !== categoryId
                     ),
                   }
-                : section
+                : s
             ),
           }
-        : catalog
+        : c
     );
-
-    setCatalogs(updatedCatalogs);
-
-    success_message(null, null, `Category has been deleted successfully.`);
+    setCatalogs(updated);
+    success_message(null, null, "Category has been deleted successfully.");
   };
-
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setHydrated(true);
-    setCatalogs(catalogData.service_catalogs);
-  }, [catalogData.service_catalogs]);
-
-  if (!hydrated) return null;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Catalog Management</h2>
-        <Dialog open={catalogDialogOpen} onOpenChange={setCatalogDialogOpen}>
-          <DialogTrigger asChild>
-            <div>
-              <Button
-                className="bg-admin-purple hover:bg-admin-purple/90 text-white"
-                onClick={() => {
-                  setEditingCatalog(null);
-                  setNewCatalogName("");
-                }}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Catalog
-              </Button>
-            </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editingCatalog ? "Edit Catalog" : "Add New Catalog"}
-              </DialogTitle>
-              <DialogDescription>
-                {editingCatalog
-                  ? "Update the catalog details below."
-                  : "Enter the details for the new catalog."}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <label htmlFor="name" className="text-sm font-medium">
-                  Catalog Name
-                </label>
-                <Input
-                  id="name"
-                  value={newCatalogName}
-                  onChange={(e) => setNewCatalogName(e.target.value)}
-                  placeholder="Enter catalog name"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <div>
-                <Button
-                  variant="outline"
-                  onClick={() => setCatalogDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={
-                    editingCatalog ? handleUpdateCatalog : handleAddCatalog
-                  }
-                  className="bg-admin-purple hover:bg-admin-purple/90 text-white"
-                >
-                  {editingCatalog ? "Update Catalog" : "Add Catalog"}
-                </Button>
-              </div>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <CatalogDialog
+          open={catalogDialogOpen}
+          onOpenChange={setCatalogDialogOpen}
+          onSubmit={handleAddOrUpdateCatalog}
+          initialValue={editingCatalog?.name}
+          isEditing={!!editingCatalog}
+        />
       </div>
 
-      <Tabs defaultValue={catalogs[0]?.id}>
-        <TabsList className="mb-4 w-full overflow-x-auto flex max-w-none">
-          {catalogs.map((catalog) => (
-            <TabsTrigger
-              key={catalog.id}
-              value={catalog.id}
-              className="min-w-[120px]"
-            >
-              {catalog.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <Tabs defaultValue={currentCatalogId} onValueChange={setCurrentCatalogId}>
+        <div className="overflow-x-auto w-full">
+          <TabsList className="flex w-max gap-2 bg-gray-100 border border-gray-200 rounded-lg px-3 py-3 text-center shadow-sm">
+            {catalogs.map((catalog) => (
+              <TabsTrigger
+                key={catalog.id}
+                value={catalog.id}
+                className="whitespace-nowrap px-3 py-2 rounded-md"
+              >
+                {catalog.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         {catalogs.map((catalog) => (
-          <TabsContent
-            key={catalog.id}
-            value={catalog.id}
-            className="space-y-6"
-          >
+          <TabsContent key={catalog.id} value={catalog.id}>
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between items-center">
                   <CardTitle>{catalog.name}</CardTitle>
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
                         setEditingCatalog(catalog);
-                        setNewCatalogName(catalog.name);
                         setCatalogDialogOpen(true);
                       }}
                     >
@@ -450,288 +286,142 @@ export function CatalogManagements({ catalogData }: CatalogManagementsProps) {
                   </div>
                 </div>
                 <CardDescription>
-                  Manage sections and categories for this catalog
+                  Manage sections and categories
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Sections</h3>
-                    <Dialog
-                      open={sectionDialogOpen}
-                      onOpenChange={setSectionDialogOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <div>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setEditingSection(null);
-                              setNewSectionTitle("");
-                            }}
-                          >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Section
-                          </Button>
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>
-                            {editingSection
-                              ? "Edit Section"
-                              : "Add New Section"}
-                          </DialogTitle>
-                          <DialogDescription>
-                            {editingSection
-                              ? "Update the section details below."
-                              : "Enter the details for the new section."}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid gap-2">
-                            <label
-                              htmlFor="section-title"
-                              className="text-sm font-medium"
-                            >
-                              Section Title
-                            </label>
-                            <Input
-                              id="section-title"
-                              value={newSectionTitle}
-                              onChange={(e) =>
-                                setNewSectionTitle(e.target.value)
-                              }
-                              placeholder="Enter section title"
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <div>
-                            <Button
-                              variant="outline"
-                              onClick={() => setSectionDialogOpen(false)}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              onClick={
-                                editingSection
-                                  ? handleUpdateSection
-                                  : () => handleAddSection(catalog.id)
-                              }
-                              className="bg-admin-purple hover:bg-admin-purple/90 text-white"
-                            >
-                              {editingSection
-                                ? "Update Section"
-                                : "Add Section"}
-                            </Button>
-                          </div>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Sections</h3>
+                  <SectionDialog
+                    open={sectionDialogOpen}
+                    onOpenChange={setSectionDialogOpen}
+                    onSubmit={handleAddOrUpdateSection}
+                    initialValue={editingSection?.section.section_title}
+                    isEditing={!!editingSection}
+                  />
+                </div>
 
-                  {catalog.sections.length === 0 ? (
-                    <div className="text-center py-10 bg-gray-50 rounded-md">
-                      <p className="text-gray-500">
-                        No sections found. Add a new section to get started.
-                      </p>
-                    </div>
-                  ) : (
-                    <Accordion type="multiple" className="w-full">
-                      {catalog.sections.map((section) => (
-                        <AccordionItem
-                          key={section.section_title}
-                          value={section.section_title}
-                        >
-                          <AccordionTrigger className="py-4 px-3 hover:bg-gray-50 rounded-md group">
-                            <div className="flex items-center justify-between w-full mr-4">
-                              <span>{section.section_title}</span>
-                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingSection({
-                                      catalogId: catalog.id,
-                                      section,
-                                    });
-                                    setNewSectionTitle(section.section_title);
-                                    setSectionDialogOpen(true);
-                                  }}
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteSection(
-                                      catalog.id,
-                                      section.section_title
-                                    );
-                                  }}
-                                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
+                {catalog.sections.length === 0 ? (
+                  <div className="text-center py-10 bg-gray-50 rounded-md text-gray-500">
+                    No sections found.
+                  </div>
+                ) : (
+                  <Accordion type="multiple">
+                    {catalog.sections.map((section) => (
+                      <AccordionItem
+                        key={section.section_title}
+                        value={section.section_title}
+                      >
+                        <AccordionTrigger>
+                          <div className="flex justify-between w-full items-center">
+                            <span>{section.section_title}</span>
+                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingSection({
+                                    catalogId: catalog.id,
+                                    section,
+                                  });
+                                  setSectionDialogOpen(true);
+                                }}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteSection(
+                                    catalog.id,
+                                    section.section_title
+                                  );
+                                }}
+                                className="h-8 w-8 p-0 text-red-500"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="pl-4 pt-2 pb-4">
-                              <div className="flex items-center justify-between mb-4">
-                                <h4 className="text-sm font-medium">
-                                  Categories
-                                </h4>
-                                <Dialog
-                                  open={categoryDialogOpen}
-                                  onOpenChange={setCategoryDialogOpen}
-                                >
-                                  <DialogTrigger asChild>
-                                    <div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="pl-4">
+                            <div className="flex justify-between items-center mb-2">
+                              <h4 className="text-sm font-medium">
+                                Categories
+                              </h4>
+                              <CategoryDialog
+                                open={categoryDialogOpen}
+                                onOpenChange={setCategoryDialogOpen}
+                                onSubmit={handleAddOrUpdateCategory}
+                                initialValue={editingCategory?.category.name}
+                                isEditing={!!editingCategory}
+                              />
+                            </div>
+                            {section.categories.length === 0 ? (
+                              <div className="bg-gray-50 py-4 rounded text-center text-sm text-gray-500">
+                                No categories found.
+                              </div>
+                            ) : (
+                              <div className="space-y-2">
+                                {section.categories.map((cat) => (
+                                  <div
+                                    key={cat.id}
+                                    className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
+                                  >
+                                    <div className="flex gap-2 items-center">
+                                      <ChevronRight className="h-4 w-4 text-gray-400" />
+                                      <span>{cat.name}</span>
+                                    </div>
+                                    <div className="flex gap-1">
                                       <Button
-                                        variant="outline"
+                                        variant="ghost"
                                         size="sm"
                                         onClick={() => {
-                                          setEditingCategory(null);
-                                          setNewCategoryName("");
+                                          setEditingCategory({
+                                            catalogId: catalog.id,
+                                            sectionTitle: section.section_title,
+                                            category: cat,
+                                          });
+                                          setCurrentCatalogId(catalog.id);
+                                          setCurrentSectionTitle(
+                                            section.section_title
+                                          );
+                                          setCategoryDialogOpen(true);
                                         }}
+                                        className="h-7 w-7 p-0"
                                       >
-                                        <Plus className="h-3 w-3 mr-1" />
-                                        Add Category
+                                        <Edit className="h-3 w-3" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleDeleteCategory(
+                                            catalog.id,
+                                            section.section_title,
+                                            cat.id
+                                          )
+                                        }
+                                        className="h-7 w-7 p-0 text-red-500"
+                                      >
+                                        <Trash2 className="h-3 w-3" />
                                       </Button>
                                     </div>
-                                  </DialogTrigger>
-                                  <DialogContent className="sm:max-w-[425px]">
-                                    <DialogHeader>
-                                      <DialogTitle>
-                                        {editingCategory
-                                          ? "Edit Category"
-                                          : "Add New Category"}
-                                      </DialogTitle>
-                                      <DialogDescription>
-                                        {editingCategory
-                                          ? "Update the category details below."
-                                          : "Enter the details for the new category."}
-                                      </DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                      <div className="grid gap-2">
-                                        <label
-                                          htmlFor="category-name"
-                                          className="text-sm font-medium"
-                                        >
-                                          Category Name
-                                        </label>
-                                        <Input
-                                          id="category-name"
-                                          value={newCategoryName}
-                                          onChange={(e) =>
-                                            setNewCategoryName(e.target.value)
-                                          }
-                                          placeholder="Enter category name"
-                                        />
-                                      </div>
-                                    </div>
-                                    <DialogFooter>
-                                      <div>
-                                        <Button
-                                          variant="outline"
-                                          onClick={() =>
-                                            setCategoryDialogOpen(false)
-                                          }
-                                        >
-                                          Cancel
-                                        </Button>
-                                        <Button
-                                          onClick={
-                                            editingCategory
-                                              ? handleUpdateCategory
-                                              : () =>
-                                                  handleAddCategory(
-                                                    catalog.id,
-                                                    section.section_title
-                                                  )
-                                          }
-                                          className="bg-admin-purple hover:bg-admin-purple/90 text-white"
-                                        >
-                                          {editingCategory
-                                            ? "Update Category"
-                                            : "Add Category"}
-                                        </Button>
-                                      </div>
-                                    </DialogFooter>
-                                  </DialogContent>
-                                </Dialog>
+                                  </div>
+                                ))}
                               </div>
-
-                              {section.categories.length === 0 ? (
-                                <div className="text-center py-6 bg-gray-50 rounded-md">
-                                  <p className="text-gray-500 text-sm">
-                                    No categories found. Add a new category to
-                                    get started.
-                                  </p>
-                                </div>
-                              ) : (
-                                <div className="space-y-2">
-                                  {section.categories.map((category) => (
-                                    <div
-                                      key={category.id}
-                                      className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md"
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <ChevronRight className="h-4 w-4 text-gray-400" />
-                                        <span>{category.name}</span>
-                                      </div>
-                                      <div className="flex items-center gap-1">
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => {
-                                            setEditingCategory({
-                                              catalogId: catalog.id,
-                                              sectionTitle:
-                                                section.section_title,
-                                              category,
-                                            });
-                                            setNewCategoryName(category.name);
-                                            setCategoryDialogOpen(true);
-                                          }}
-                                          className="h-7 w-7 p-0"
-                                        >
-                                          <Edit className="h-3 w-3" />
-                                        </Button>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() =>
-                                            handleDeleteCategory(
-                                              catalog.id,
-                                              section.section_title,
-                                              category.id
-                                            )
-                                          }
-                                          className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
-                                        >
-                                          <Trash2 className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  )}
-                </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

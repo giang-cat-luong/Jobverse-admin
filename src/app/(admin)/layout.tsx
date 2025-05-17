@@ -10,9 +10,9 @@ export default function StartSellingLayout({
   children,
 }: StartSellingLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 overflow-hidden">
       <SellerSidebar />
-      <div className="flex-1 transition-all duration-300">
+      <div className="flex-1 overflow-auto">
         <div className="min-h-screen flex flex-col">{children}</div>
       </div>
     </div>

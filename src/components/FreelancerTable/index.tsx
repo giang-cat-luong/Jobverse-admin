@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { FreelancerApplication } from "@/types/admin";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,10 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { FreelancerApplication } from "@/types/admin";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { Check, X, Eye } from "lucide-react";
 import useNotification from "@/hooks/useNotification";
+import { Check, Eye, X } from "lucide-react";
 
 interface FreelancerTableProps {
   freelancers: FreelancerApplication[];
@@ -65,7 +65,7 @@ export function FreelancerTable({ freelancers }: FreelancerTableProps) {
   };
 
   const handleView = (id: string) => {
-    router.push(`/freelancers/${id}`);
+    router.push(`/freelance-request/${id}`);
   };
 
   const getPaymentStatusBadge = (status: string) => {
@@ -115,98 +115,100 @@ export function FreelancerTable({ freelancers }: FreelancerTableProps) {
   };
 
   return (
-    <div className="rounded-md border border-gray-200 bg-white">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Freelancer</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Payment Status</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {applications.map((freelancer) => (
-            <TableRow
-              key={freelancer.id}
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => handleView(freelancer.id)}
-            >
-              <TableCell>{freelancer.id}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full overflow-hidden">
-                    <img
-                      src={freelancer.avatar_url}
-                      alt={freelancer.display_name}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <div className="font-medium">
-                      {`${freelancer.name} ${freelancer.surname}`}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      @{freelancer.username}
-                    </div>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell>{freelancer.email}</TableCell>
-              <TableCell>{freelancer.freelancer_type}</TableCell>
-              <TableCell>{formatDate(freelancer.created_at)}</TableCell>
-              <TableCell>
-                {getPaymentStatusBadge(freelancer.payment_status)}
-              </TableCell>
-              <TableCell>
-                {getApplicationStatusBadge(freelancer.application_status)}
-              </TableCell>
-              <TableCell>
-                <div
-                  className="flex items-center gap-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 border-gray-200"
-                    onClick={() => handleView(freelancer.id)}
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                  {freelancer.application_status === "pending" && (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800"
-                        onClick={(e) => handleApprove(freelancer.id, e)}
-                      >
-                        <Check className="h-4 w-4 mr-1" />
-                        Approve
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800"
-                        onClick={(e) => handleReject(freelancer.id, e)}
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Reject
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </TableCell>
+    <div className="overflow-x-auto">
+      <div className="min-w-[1200px]">
+        <Table className="w-full table-auto">
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Freelancer</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Payment Status</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {applications.map((freelancer) => (
+              <TableRow
+                key={freelancer.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => handleView(freelancer.id)}
+              >
+                <TableCell>{freelancer.id}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full overflow-hidden">
+                      <img
+                        src={freelancer.avatar_url}
+                        alt={freelancer.display_name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-medium">
+                        {`${freelancer.name} ${freelancer.surname}`}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        @{freelancer.username}
+                      </div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>{freelancer.email}</TableCell>
+                <TableCell>{freelancer.freelancer_type}</TableCell>
+                <TableCell>{formatDate(freelancer.created_at)}</TableCell>
+                <TableCell>
+                  {getPaymentStatusBadge(freelancer.payment_status)}
+                </TableCell>
+                <TableCell>
+                  {getApplicationStatusBadge(freelancer.application_status)}
+                </TableCell>
+                <TableCell>
+                  <div
+                    className="flex items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 border-gray-200"
+                      onClick={() => handleView(freelancer.id)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                    {freelancer.application_status === "pending" && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800"
+                          onClick={(e) => handleApprove(freelancer.id, e)}
+                        >
+                          <Check className="h-4 w-4 mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800"
+                          onClick={(e) => handleReject(freelancer.id, e)}
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          Reject
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
