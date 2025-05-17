@@ -15,6 +15,18 @@
   stroke-dasharray: 79.2295761108, 40;
 }
 
+.submit-button {
+  @apply cursor-pointer w-full bg-blue-600 text-white font-semibold rounded-md shadow-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed
+}
+
+.submit-button-skip {
+  @apply cursor-pointer w-full bg-blue-600 text-white font-semibold rounded-md shadow-lg hover:bg-blue-700 transition duration-300 
+}
+
+.submit-button-custom {
+  @apply cursor-pointer bg-blue-600 text-white font-semibold rounded-md shadow-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed
+}
+
 @keyframes tb-fw-spinner-dash {
   0% {
     stroke-dashoffset: 0;

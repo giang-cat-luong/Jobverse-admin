@@ -13,8 +13,8 @@ const FreelanceRequest = () => {
       <SellerHeader/>
       
       <div className="container px-4 sm:px-6 py-4 sm:py-6 mx-auto">
-        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">All Applications</h2>
-        <div className="overflow-x-auto">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Membership Levels</h2>
+        <div className="bg-white p-4 rounded-lg shadow">
           <FreelancerTable freelancers={freelancers} />
         </div>
       </div>
