@@ -2,6 +2,7 @@
 import { AdminImage } from "@/constants/images";
 import {
   faArrowRightToBracket,
+  faBank,
   faCalendar,
   faFileContract,
   faIdCard,
@@ -76,6 +77,11 @@ const SellerSidebar = () => {
                 href: "/membership",
                 icon: faCalendar,
                 label: "Membership",
+              },
+              {
+                href: "/banking-management",
+                icon: faBank,
+                label: "Banking management",
               },
             ].map((item) => (
               <Link

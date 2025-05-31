@@ -7,7 +7,7 @@ export const API_ROUTES = {
   },
 
   catalog:{
-    get_all_catalogs:"/service/catalogs-all",
+    get_all_catalogs:"/service/catalogs/all",
     get_catalog: "/admin/service/catalogs",
     create_catalog: "/admin/service/catalogs",
   },
