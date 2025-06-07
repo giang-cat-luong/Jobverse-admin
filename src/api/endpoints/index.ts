@@ -5,7 +5,6 @@ export const API_ROUTES = {
     update_membership: "/admin/membership",
     delete_membership: "/admin/membership",
   },
-
   catalog:{
     get_all_catalogs:"/service/catalogs/all",
     get_catalog: "/admin/service/catalogs",
@@ -21,4 +20,9 @@ export const API_ROUTES = {
   auth: {
     login: "/admin/login",
   },
+  apply_freelance: {
+    get_all: "/admin/jobs/pending",
+    approve_request: "/admin/jobs/approve",
+    reject_request: "/admin/jobs/deny",
+  }
 };

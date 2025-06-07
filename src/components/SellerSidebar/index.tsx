@@ -6,7 +6,8 @@ import {
   faCalendar,
   faFileContract,
   faIdCard,
-  faListCheck
+  faListCheck,
+  faSuitcase
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -82,6 +83,11 @@ const SellerSidebar = () => {
                 href: "/banking-management",
                 icon: faBank,
                 label: "Banking management",
+              },
+              {
+                href: "/job-request-management",
+                icon: faSuitcase,
+                label: "Job Application",
               },
             ].map((item) => (
               <Link
