@@ -45,7 +45,7 @@ export function JobRequestTable() {
   );
 
   const handleView = (id: string) => {
-    router.push(`/freelance-request/${id}`);
+    router.push(`/job-request-management/${id}`);
   };
 
   const handleApprove = async (job_id: string, e: React.MouseEvent) => {
