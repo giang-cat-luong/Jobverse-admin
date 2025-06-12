@@ -130,7 +130,7 @@ export function JobRequestTable() {
                     alt={job.service_type.title}
                     width={150}
                     height={100}
-                    className="object-cover inline-block mr-2"
+                    className="object-cover max-h-[100px] inline-block mr-2"
                   />
                 </TableCell>
                 <TableCell>
@@ -139,7 +139,7 @@ export function JobRequestTable() {
                       <Image
                         src={
                           isValidImageUrl(job.user.avatar_url)
-                            ? job.images[0].image_url
+                            ? job.user.avatar_url
                             : LandingImage.avatar
                         }
                         alt={job.user.display_name}
