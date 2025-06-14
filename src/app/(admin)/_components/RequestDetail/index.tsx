@@ -1,4 +1,7 @@
 "use client";
+import { API_ROUTES } from "@/api/endpoints";
+import Error from "@/app/error";
+import Loading from "@/components/Loading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,79 +12,121 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { LandingImage } from "@/constants/images";
+import { usePrivateFetchParams, usePrivatePost } from "@/hooks/api-hooks";
 import useNotification from "@/hooks/useNotification";
 import { FreelancerApplication } from "@/types/admin";
+import { FreelancerRequest } from "@/types/freelancerRequest";
 import { ArrowLeft, Check, ExternalLink, X } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface FreelancerDetailProps {
-  freelancer: FreelancerApplication;
+  requestId: string;
 }
 
-export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
+export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
   const route = useRouter();
-  const { success_message } = useNotification();
-  const [application, setApplication] =
-    useState<FreelancerApplication>(freelancer);
+  const { success_message, error_message } = useNotification();
 
-  const handleApprove = () => {
-    setApplication({ ...application, application_status: "approved" });
-    success_message(
-      null,
-      null,
-      `Freelancer application #${application.id} has been approved.`
-    );
-  };
+  const [loadingAction, setLoadingAction] = useState<{
+    userId: string;
+    type: "approve" | "reject" | null;
+  } | null>(null);
 
-  const handleReject = () => {
-    setApplication({ ...application, application_status: "rejected" });
-    success_message(
-      null,
-      null,
-      `Freelancer application #${application.id} has been rejected.`
-    );
-  };
+  const {
+    data: requestData,
+    isLoading,
+    error,
+    mutate,
+  } = usePrivateFetchParams<FreelancerRequest>(
+    API_ROUTES.apply_freelance.get_freelancer_detail + "/" + requestId
+  );
 
-  const getPaymentStatusBadge = (status: string) => {
-    switch (status) {
-      case "verified":
-        return <Badge className="bg-green-100 text-green-800">Verified</Badge>;
-      case "rejected":
-        return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
-      default:
-        return <Badge className="bg-amber-100 text-amber-800">Pending</Badge>;
+  const { trigger: approveRequest } = usePrivatePost(
+    API_ROUTES.apply_freelance.verify_freelancer
+  );
+  const { trigger: rejectRequest } = usePrivatePost(
+    API_ROUTES.apply_freelance.reject_request
+  );
+
+  const application = requestData?.user;
+
+  const handleApprove = async (user_id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoadingAction({ userId: user_id, type: "approve" });
+    try {
+      await approveRequest({ user_id });
+      await mutate();
+      success_message(null, null, `Approved job #${user_id}`);
+    } catch {
+      error_message(null, null, `Failed to approve job #${user_id}`);
+    } finally {
+      setLoadingAction(null);
     }
   };
 
-  const getApplicationStatusBadge = (status: string) => {
+  const handleReject = () => {
+    success_message(
+      null,
+      null,
+      `Freelancer application #${requestData?.user_id} has been rejected.`
+    );
+  };
+
+  const getPaymentStatusBadge = (status: boolean) => {
     switch (status) {
-      case "approved":
-        return <Badge className="bg-green-100 text-green-800">Approved</Badge>;
-      case "rejected":
-        return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
+      case true:
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+            Verified
+          </Badge>
+        );
       default:
-        return <Badge className="bg-blue-100 text-blue-800">Pending</Badge>;
+        return (
+          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">
+            Pending
+          </Badge>
+        );
+    }
+  };
+
+  const getApplicationStatusBadge = (status: boolean) => {
+    switch (status) {
+      case true:
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+            Verified
+          </Badge>
+        );
+      default:
+        return (
+          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">
+            Pending
+          </Badge>
+        );
     }
   };
 
   const handleVerifyPayment = () => {
-    setApplication({ ...application, payment_status: "verified" });
     success_message(
       null,
       null,
-      `Payment for freelancer application #${application.id} has been verified.`
+      `Payment for freelancer application #${requestData?.user_id} has been verified.`
     );
   };
 
   const handleRejectPayment = () => {
-    setApplication({ ...application, payment_status: "rejected" });
     success_message(
       null,
       null,
-      `Payment for freelancer application #${application.id} has been rejected.`
+      `Payment for freelancer application #${requestData?.user_id} has been rejected.`
     );
   };
+
+  if (isLoading || !application) return <Loading />;
+  if (error) return <Error />;
 
   return (
     <div className="space-y-6">
@@ -96,7 +141,7 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
         </Button>
 
         <div className="flex items-center gap-2">
-          {application.application_status === "pending" && (
+          {requestData.is_verified === false && (
             <>
               <Button
                 variant="outline"
@@ -108,17 +153,21 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
               </Button>
               <Button
                 className="bg-third hover:bg-primary text-white"
-                onClick={handleApprove}
+                onClick={(e) => handleApprove(requestData.user_id, e)}
+                disabled={
+                  loadingAction?.userId === requestData.user_id &&
+                  loadingAction?.type === "approve"
+                }
               >
                 <Check className="h-4 w-4 mr-2" />
                 Approve Application
               </Button>
             </>
           )}
-          {application.application_status !== "pending" && (
+          {requestData.is_verified !== false && (
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Application Status:</span>
-              {getApplicationStatusBadge(application.application_status)}
+              {getApplicationStatusBadge(requestData.is_verified)}
             </div>
           )}
         </div>
@@ -132,50 +181,47 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
           <CardContent className="space-y-4">
             <div className="flex justify-center mb-4">
               <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-admin-light-purple">
-                <img
-                  src={application.avatar_url}
-                  alt={application.display_name}
+                <Image
+                  src={LandingImage.avatar}
+                  alt={application.user.display_name}
+                  width={46}
+                  height={40}
                   className="h-full w-full object-cover"
                 />
               </div>
             </div>
 
             <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold">{`${application.title} ${application.name} ${application.surname}`}</h3>
-              <p className="text-gray-500">@{application.username}</p>
-              <p className="text-sm mt-1">{application.email}</p>
+              <h3 className="text-lg font-semibold">{`${application.card.title} ${application.card.name} ${application.card.surname}`}</h3>
+              <p className="text-gray-500">@{application.user.username}</p>
+              <p className="text-sm mt-1">{application.contact.email}</p>
             </div>
 
             <Separator />
 
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div className="text-gray-500">Display Name:</div>
-              <div>{application.display_name}</div>
+              <div>{application.user.display_name}</div>
 
               <div className="text-gray-500">Freelancer Type:</div>
-              <div>{application.freelancer_type}</div>
+              <div>{application.profile.freelancer_type}</div>
 
               <div className="text-gray-500">Country:</div>
-              <div>{application.country}</div>
+              <div>{application.address.country}</div>
 
               <div className="text-gray-500">Birth Date:</div>
-              <div>{new Date(application.birth_date).toLocaleDateString()}</div>
+              <div>
+                {new Date(application.user.birth_date).toLocaleDateString()}
+              </div>
 
               <div className="text-gray-500">Sources:</div>
-              <div className="flex flex-wrap gap-1">
-                {application.sourceTypes.map((source) => (
-                  <Badge key={source} variant="outline" className="text-xs">
-                    {source}
-                  </Badge>
-                ))}
-              </div>
             </div>
 
             <Separator />
 
             <div>
               <h4 className="font-medium mb-2">Bio</h4>
-              <p className="text-sm">{application.bio}</p>
+              <p className="text-sm">{application.profile.bio}</p>
             </div>
           </CardContent>
         </Card>
@@ -196,31 +242,31 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
                     <h4 className="text-sm font-medium text-gray-500">
                       Address Details
                     </h4>
-                    <p>{application.address_details}</p>
+                    <p>{application.address.address_details}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       Province
                     </h4>
-                    <p>{application.province}</p>
+                    <p>{application.address.province}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       Subdistrict/District
                     </h4>
-                    <p>{application.subdistrict_or_district}</p>
+                    <p>{application.address.subdistrict_or_district}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       District/Subdistrict
                     </h4>
-                    <p>{application.district_or_subdistrict}</p>
+                    <p>{application.address.district_or_subdistrict}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       ZIP Code
                     </h4>
-                    <p>{application.zip_code}</p>
+                    <p>{application.address.zip_code}</p>
                   </div>
                 </div>
               </div>
@@ -234,37 +280,37 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
                     <h4 className="text-sm font-medium text-gray-500">
                       Card Number
                     </h4>
-                    <p>{application.card_number}</p>
+                    <p>{application.card.card_number}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       Address Details
                     </h4>
-                    <p>{application.card_address_details}</p>
+                    <p>{application.card.address_details}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       Subdistrict/District
                     </h4>
-                    <p>{application.card_subdistrict_or_district}</p>
+                    <p>{application.card.subdistrict_or_district}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       District/Subdistrict
                     </h4>
-                    <p>{application.card_district_or_subdistrict}</p>
+                    <p>{application.card.district_or_subdistrict}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       Province
                     </h4>
-                    <p>{application.card_province}</p>
+                    <p>{application.card.province}</p>
                   </div>
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
                       ZIP Code
                     </h4>
-                    <p>{application.card_zip_code}</p>
+                    <p>{application.card.zip_code}</p>
                   </div>
                 </div>
 
@@ -275,13 +321,13 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
                     </h4>
                     <div className="border rounded-md overflow-hidden">
                       <a
-                        href={application.front_card}
+                        href={application.card.front_card}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block relative"
                       >
                         <img
-                          src={application.front_card}
+                          src={application.card.front_card}
                           alt="ID Card Front"
                           className="w-full h-40 object-cover"
                         />
@@ -303,13 +349,13 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
                     </h4>
                     <div className="border rounded-md overflow-hidden">
                       <a
-                        href={application.back_card}
+                        href={application.card.back_card}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block relative"
                       >
                         <img
-                          src={application.back_card}
+                          src={application.card.back_card}
                           alt="ID Card Back"
                           className="w-full h-40 object-cover"
                         />
@@ -336,52 +382,16 @@ export function FreelancerDetail({ freelancer }: FreelancerDetailProps) {
                     Payment Verification (10 bath fee)
                   </h3>
                   <div className="flex items-center gap-2">
-                    {getPaymentStatusBadge(application.payment_status)}
+                    {getPaymentStatusBadge(requestData.is_verified)}
                   </div>
                 </div>
 
-                {application.payment_status === "pending" && (
+                {requestData.is_verified === false && (
                   <div className="bg-amber-50 p-4 rounded-md">
                     <p className="text-amber-800 mb-3">
                       This freelancer should have paid a 10 bath registration
                       fee. Please verify the payment before approving the
                       application.
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        className="border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800"
-                        onClick={handleRejectPayment}
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Payment Not Found
-                      </Button>
-                      <Button
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                        onClick={handleVerifyPayment}
-                      >
-                        <Check className="h-4 w-4 mr-2" />
-                        Verify Payment
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {application.payment_status === "verified" && (
-                  <div className="bg-green-50 p-4 rounded-md">
-                    <p className="text-green-800">
-                      Payment of 10 bath has been verified. You may proceed with
-                      the application approval.
-                    </p>
-                  </div>
-                )}
-
-                {application.payment_status === "rejected" && (
-                  <div className="bg-red-50 p-4 rounded-md">
-                    <p className="text-red-800">
-                      Payment verification failed. The freelancer needs to
-                      complete the payment before the application can be
-                      approved.
                     </p>
                   </div>
                 )}

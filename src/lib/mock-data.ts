@@ -3,7 +3,7 @@ import { CatalogData, FreelancerApplication, MembershipLevel } from "@/types/adm
 
 export const mockFreelancerApplications: FreelancerApplication[] = [
   {
-    id: "1",
+    user_id: "1",
     sourceTypes: ["google", "instagram"],
     avatar_url: "https://fastwork.ibrowe.com/api/v4/image/f893b4b7-bb63-4699-a162-b66fe28e54f8.png",
     username: "giang.cat.luongg24",
@@ -32,11 +32,12 @@ export const mockFreelancerApplications: FreelancerApplication[] = [
     district_or_subdistrict: "เมืองลำพูน",
     zip_code: "51000",
     payment_status: "pending",
-    application_status: "pending",
+    is_verified: false,
+    apply_status: false,
     created_at: "2023-05-15T09:30:00Z"
   },
   {
-    id: "2",
+    user_id: "2",
     sourceTypes: ["facebook"],
     avatar_url: "https://fastwork.ibrowe.com/api/v4/image/random-avatar-1.png",
     username: "somchai.dev",
@@ -65,11 +66,12 @@ export const mockFreelancerApplications: FreelancerApplication[] = [
     district_or_subdistrict: "คลองเตย",
     zip_code: "10110",
     payment_status: "verified",
-    application_status: "pending",
+    is_verified: false,
+    apply_status: false,
     created_at: "2023-05-10T14:20:00Z"
   },
   {
-    id: "3",
+    user_id: "3",
     sourceTypes: ["linkedin"],
     avatar_url: "https://fastwork.ibrowe.com/api/v4/image/random-avatar-2.png",
     username: "thai.designer",
@@ -98,11 +100,12 @@ export const mockFreelancerApplications: FreelancerApplication[] = [
     district_or_subdistrict: "บางรัก",
     zip_code: "10500",
     payment_status: "rejected",
-    application_status: "rejected",
+    is_verified: false,
+    apply_status: false,
     created_at: "2023-05-08T11:15:00Z"
   },
   {
-    id: "4",
+    user_id: "4",
     sourceTypes: ["twitter", "linkedin"],
     avatar_url: "https://fastwork.ibrowe.com/api/v4/image/random-avatar-3.png",
     username: "marketing.guru",
@@ -131,7 +134,8 @@ export const mockFreelancerApplications: FreelancerApplication[] = [
     district_or_subdistrict: "ห้วยขวาง",
     zip_code: "10400",
     payment_status: "verified",
-    application_status: "approved",
+    is_verified: false,
+    apply_status: false,
     created_at: "2023-05-05T16:45:00Z"
   }
 ];

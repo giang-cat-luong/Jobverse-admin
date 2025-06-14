@@ -1,5 +1,5 @@
 export interface FreelancerApplication {
-  id: string;
+  user_id: string;
   sourceTypes: string[];
   avatar_url: string;
   username: string;
@@ -27,8 +27,9 @@ export interface FreelancerApplication {
   subdistrict_or_district: string;
   district_or_subdistrict: string;
   zip_code: string;
-  payment_status: 'pending' | 'verified' | 'rejected';
-  application_status: 'pending' | 'approved' | 'rejected';
+  payment_status: string;
+  apply_status: boolean;
+  is_verified: boolean;
   created_at: string;
 }
 

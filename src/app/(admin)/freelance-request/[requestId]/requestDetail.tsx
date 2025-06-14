@@ -6,18 +6,13 @@ interface Props {
   requestId: string;
 }
 const FreelancerDetailPage = ({ requestId }: Props) => {
-  const freelancer = mockFreelancerApplications.find((f) => f.id === requestId);
-
-  if (!freelancer) {
-    return window.location.href = "/freelance-request";
-  }
 
   return (
     <div className="flex-1">
       <SellerHeader />
 
       <div className="container mx-auto px-6 py-6">
-        <FreelancerDetail freelancer={freelancer} />
+        <FreelancerDetail requestId={requestId} />
       </div>
     </div>
   );

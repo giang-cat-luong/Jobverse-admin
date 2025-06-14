@@ -1,11 +1,8 @@
 "use client";
 import { FreelancerTable } from "@/components/FreelancerTable";
 import SellerHeader from "@/components/SellerHeader";
-import { mockFreelancerApplications } from "@/lib/mock-data";
-import { useState } from "react";
 
 const FreelanceRequest = () => {
-  const [freelancers] = useState(mockFreelancerApplications);
 
   return (
     <div className="flex-1">
@@ -16,7 +13,7 @@ const FreelanceRequest = () => {
           All Applications
         </h2>
         <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
-          <FreelancerTable freelancers={freelancers} />
+          <FreelancerTable />
         </div>
       </div>
     </div>

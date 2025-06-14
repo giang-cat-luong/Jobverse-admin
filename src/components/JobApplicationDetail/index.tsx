@@ -23,188 +23,66 @@ import {
 import { Job } from "@/types/admin";
 import useNotification from "@/hooks/useNotification";
 import { useRouter } from "next/navigation";
+import { usePrivateFetchParams, usePrivatePost } from "@/hooks/api-hooks";
+import { API_ROUTES } from "@/api/endpoints";
+import Loading from "../Loading";
+import Error from "@/app/error";
 
 type Props = {
   jobId: string;
 };
 const JobApplicationDetail = ({ jobId }: Props) => {
-  const { success_message } = useNotification();
   const router = useRouter();
-  // Mock job data - in real app, fetch from API
-  const [job, setJob] = useState<Job | null>(null);
+  const { success_message, error_message } = useNotification();
 
-  useEffect(() => {
-    // Mock job data - replace with actual API call
-    const mockJob: Job = {
-      id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-      user: {
-        username: "luckystation",
-        display_name: "luckystation",
-        avatar_url:
-          "https://fastwork.ibrowe.com/api/v4/image/3df69e7c-713c-4455-b6b7-abbae47e329c.png",
-        bio: "กราฟิกดีไซเนอร์ (Freelance Graphic Designer)\n\nมิถุนายน 2564 - ธันวาคม 2566\n\nออกแบบสื่อกราฟิก เช่น โลโก้ แบนเนอร์ และโพสต์โซเชียลมีเดีย สำหรับธุรกิจขนาดเล็กและสตาร์ทอัพ",
-        user_id: "697f5642-a6d6-473b-b409-f5e418c02f78",
-      },
-      service_catalog: {
-        id: "2b3060e2-9ff1-465a-8518-9d538975a27d",
-        title: "Graphic design",
-        second_title: null,
-        created_at: "2025-04-12T04:40:01.489433",
-        updated_at: "2025-04-12T04:40:01.489433",
-        parent_id: null,
-        service_topic: null,
-        image_url: null,
-        is_popular: false,
-        slug: "graphic-design",
-      },
-      service_type: {
-        id: "beb41dd6-8c74-4b24-b7cb-5e766d874226",
-        title: "Character Design",
-        second_title: "Character Design",
-        created_at: "2025-04-12T04:40:01.489433",
-        updated_at: "2025-04-12T04:40:01.489433",
-        parent_id: "2b3060e2-9ff1-465a-8518-9d538975a27d",
-        service_topic: "Graphic design",
-        image_url: null,
-        is_popular: false,
-        slug: "character-design",
-      },
-      slug: "kaebbaebnen-rsamhrabaichngaan-8518dfbe",
-      title: "ออกแบบแบนเนอร์สำหรับใช้งาน",
-      base_price: "0.00",
-      price_before_discount: "0.00",
-      show: true,
-      rating: "0.00",
-      status: 2,
-      is_hot: false,
-      is_pro: false,
-      description:
-        "แน่นอนครับ! ด้านล่างคือตัวอย่าง **รายละเอียดงานออกแบบแบนเนอร์** สำหรับโพสต์รับงานฟรีแลนซ์ ที่ดูเป็นมืออาชีพ น่าเชื่อถือ และกระชับ:\n\n---\n\n### 🧑‍🎨 **รับออกแบบแบนเนอร์ทุกประเภท – โดยนักออกแบบฟรีแลนซ์มืออาชีพ!**\n\n✅ ออกแบบแบนเนอร์สำหรับใช้ใน\n\n* โฆษณาออนไลน์ (Facebook, Instagram, LINE OA, Google Ads)\n* เว็บไซต์ / แอปพลิเคชัน\n* งานพิมพ์ (แบนเนอร์ไวนิล, ป้ายร้าน, โปรโมชัน ฯลฯ)\n* YouTube / Cover Page / Slide Presentation\n* งานกราฟิกอื่น ๆ ตามต้องการ",
-      is_instant_hire: false,
-      purchase_count: 0,
-      reviews_count: 0,
-      packages: [
-        {
-          id: "5349408d-dc17-4a57-9a09-7a426ab95fba",
-          job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-          description: "ออกแบบใหม่ตามบรีฟ ไม่ใช้เทมเพลตสำเร็จ",
-          price: "100000.00",
-          sort_order: 0,
-          created_at: "2025-06-03T02:57:59.807540",
-          updated_at: "2025-06-03T02:57:59.807540",
-          package_name: "เริ่มต้น",
-          execution_time: 1440,
-        },
-        {
-          id: "33479502-2972-4bb2-82fa-34645474eefb",
-          job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-          description: "ออกแบบใหม่ตามบรีฟ ไม่ใช้เทมเพลตสำเร็จ ออกแบบ 3 แบบ",
-          price: "1000000.00",
-          sort_order: 1,
-          created_at: "2025-06-03T02:57:59.807540",
-          updated_at: "2025-06-03T02:57:59.807540",
-          package_name: "มาตรฐาน",
-          execution_time: 2440,
-        },
-        {
-          id: "bbf4d751-6282-4646-9167-9cbbac68ab52",
-          job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-          description: "ออกแบบใหม่ตามบรีฟ ไม่ใช้เทมเพลตสำเร็จ ออกแบบไม่จำกัด",
-          price: "10000000.00",
-          sort_order: 2,
-          created_at: "2025-06-03T02:57:59.807540",
-          updated_at: "2025-06-03T02:57:59.807540",
-          package_name: "มืออาชีพ",
-          execution_time: 6440,
-        },
-      ],
-      images: [
-        {
-          id: "1e2b2933-e216-455f-a55e-1e49e9805bea",
-          job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-          image_url:
-            "https://fastwork.ibrowe.com/api/v4/image/3c48a56a-813b-4ae8-bb29-3ba27fc36a79.jpeg",
-          is_cover_photo: true,
-          sort_order: 0,
-          alt: "Ảnh bìa",
-          created_at: "2025-06-03T02:58:13.212914",
-          updated_at: "2025-06-03T02:58:13.212914",
-        },
-        {
-          id: "641db6c4-ffb0-4557-b161-85bb219dfdd4",
-          job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-          image_url:
-            "https://fastwork.ibrowe.com/api/v4/image/abd41660-b46e-4493-95be-aac9ca670503.webp",
-          is_cover_photo: false,
-          sort_order: 1,
-          alt: "Hình dịch vụ 1",
-          created_at: "2025-06-03T02:58:13.212914",
-          updated_at: "2025-06-03T02:58:13.212914",
-        },
-      ],
-      worksteps: [
-        {
-          id: "57a99f8a-bf31-498e-95b4-dd36142fc41e",
-          job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-          description:
-            "ขั้นตอนที่ 1: วิเคราะห์ความต้องการของลูกค้า\nพูดคุยเพื่อทำความเข้าใจวัตถุประสงค์ของโพสต์ เช่น ขายสินค้า, เพิ่มยอดไลก์, สร้างแบรนด์ ฯลฯ",
-          sort_order: 0,
-        },
-        {
-          id: "d06b4c36-f763-4529-b380-295b8bf7c177",
-          job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-          description:
-            "ขั้นตอนที่ 2: ออกแบบแนวคิดและองค์ประกอบภาพ (Concept Design)\nสร้าง Mood & Tone และแนวทางภาพรวมตามแบรนด์",
-          sort_order: 1,
-        },
-      ],
-      onboarding: {
-        id: "919554ca-50df-4326-8237-2273d8859e84",
-        job_id: "150d2c66-1c8f-4b27-afaf-4ca5cfb818c7",
-        step1: true,
-        step2: true,
-        step3: true,
-        step4: true,
-        step5: true,
-      },
-      created_at: "2025-05-08T09:47:31.353210",
-      updated_at: "2025-05-08T09:47:31.353210",
-      tag_ids: [],
-      completion_rate: 0,
-      badges: [],
-      overall_rating: {
-        overall_rating: 0.0,
-        average_responsiveness_rating: 0.0,
-        average_service_rating: 0.0,
-        average_skill_rating: 0.0,
-        average_worth_rating: 0.0,
-      },
-      rehire_orders_count: 0,
-      additional_attributes: {
-        certificate_badge: false,
-        rehire_guarantee_badge: false,
-      },
-      socials: [],
-      websites: [],
-      related_jobs: [],
-      approval_status: "pending",
-    };
+  const [loadingAction, setLoadingAction] = useState<{
+    jobId: string;
+    type: "approve" | "reject" | null;
+  } | null>(null);
 
-    setJob(mockJob);
-  }, [jobId]);
+  const {
+    data: job,
+    isLoading,
+    error,
+    mutate,
+  } = usePrivateFetchParams<Job>(
+    API_ROUTES.apply_freelance.get_job_detail + "/" + jobId
+  );
 
-  const handleApprove = () => {
-    if (job) {
-      setJob({ ...job, approval_status: "approved" });
-      success_message(null, null, "The job has been approved successfully.");
+  const { trigger: approveRequest } = usePrivatePost(
+    API_ROUTES.apply_freelance.approve_request
+  );
+  const { trigger: rejectRequest } = usePrivatePost(
+    API_ROUTES.apply_freelance.reject_request
+  );
+
+  const handleApprove = async (job_id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoadingAction({ jobId: job_id, type: "approve" });
+    try {
+      await approveRequest({ job_id });
+      await mutate();
+      success_message(null, null, `Approved job #${job_id}`);
+      window.location.href = "/job-request-management";
+    } catch {
+      error_message(null, null, `Failed to approve job #${job_id}`);
+    } finally {
+      setLoadingAction(null);
     }
   };
 
-  const handleReject = () => {
-    if (job) {
-      setJob({ ...job, approval_status: "rejected" });
-      setJob({ ...job, approval_status: "approved" });
-      success_message(null, null, "The job has been rejected.");
+  const handleReject = async (job_id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoadingAction({ jobId: job_id, type: "reject" });
+    try {
+      await rejectRequest({ job_id });
+      await mutate();
+      success_message(null, null, `Rejected job #${job_id}`);
+      window.location.href = "/job-request-management";
+    } catch {
+      error_message(null, null, `Failed to reject job #${job_id}`);
+    } finally {
+      setLoadingAction(null);
     }
   };
 
@@ -247,6 +125,9 @@ const JobApplicationDetail = ({ jobId }: Props) => {
       </div>
     );
   }
+
+  if (isLoading) return <Loading />;
+  if (error) return <Error />;
 
   return (
     <div className="flex-1">
@@ -442,30 +323,37 @@ const JobApplicationDetail = ({ jobId }: Props) => {
             </Card>
 
             {/* Action Buttons */}
-            {job.approval_status === "pending" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button
-                    className="w-full bg-green-600 hover:bg-green-700"
-                    onClick={handleApprove}
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    Approve Job
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    className="w-full"
-                    onClick={handleReject}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Reject Job
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  onClick={(e) => handleApprove(job.id, e)}
+                  disabled={
+                    loadingAction?.jobId === job.id &&
+                    loadingAction?.type === "approve"
+                  }
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Approve Job
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  onClick={(e) => handleReject(job.id, e)}
+                  disabled={
+                    loadingAction?.jobId === job.id &&
+                    loadingAction?.type === "reject"
+                  }
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Reject Job
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

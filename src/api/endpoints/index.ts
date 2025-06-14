@@ -1,3 +1,4 @@
+
 export const API_ROUTES = {
   admin:{
     membership: "/admin/membership",
@@ -24,5 +25,9 @@ export const API_ROUTES = {
     get_all: "/admin/jobs/pending",
     approve_request: "/admin/jobs/approve",
     reject_request: "/admin/jobs/deny",
+    get_job_detail: "/admin/jobs/detail",
+    get_freelancer_list: "/admin/profile/verify/freelancer/list",
+    get_freelancer_detail: "/admin/profile/verify/freelancer",
+    verify_freelancer: "/admin/profile/verify/freelancer",
   }
 };

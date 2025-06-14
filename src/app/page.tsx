@@ -7,13 +7,13 @@ import { Check, FileText, Users, X } from "lucide-react";
 export default function Home() {
   const totalApplications = mockFreelancerApplications.length;
   const pendingApplications = mockFreelancerApplications.filter(
-    (app) => app.application_status === "pending"
+    (app) => app.payment_status === "Pending"
   ).length;
   const approvedApplications = mockFreelancerApplications.filter(
-    (app) => app.application_status === "approved"
+    (app) => app.payment_status === "Approved"
   ).length;
   const rejectedApplications = mockFreelancerApplications.filter(
-    (app) => app.application_status === "rejected"
+    (app) => app.payment_status === "Rejected"
   ).length;
 
   return (
@@ -104,7 +104,7 @@ export default function Home() {
                         .slice(0, 3)
                         .map((freelancer) => (
                           <div
-                            key={freelancer.id}
+                            key={freelancer.user_id}
                             className="flex items-center space-x-4"
                           >
                             <div className="h-10 w-10 rounded-full overflow-hidden">
@@ -123,17 +123,17 @@ export default function Home() {
                               </p>
                             </div>
                             <div>
-                              {freelancer.application_status === "pending" && (
+                              {freelancer.payment_status === "Pending" && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                   Pending
                                 </span>
                               )}
-                              {freelancer.application_status === "approved" && (
+                              {freelancer.payment_status === "Approved" && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                   Approved
                                 </span>
                               )}
-                              {freelancer.application_status === "rejected" && (
+                              {freelancer.payment_status === "Rejected" && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                   Rejected
                                 </span>
@@ -155,7 +155,7 @@ export default function Home() {
                         .slice(0, 3)
                         .map((freelancer) => (
                           <div
-                            key={freelancer.id}
+                            key={freelancer.user_id}
                             className="flex items-center space-x-4"
                           >
                             <div className="h-10 w-10 rounded-full overflow-hidden">
