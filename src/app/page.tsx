@@ -123,19 +123,14 @@ export default function Home() {
                               </p>
                             </div>
                             <div>
-                              {freelancer.payment_status === "Pending" && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {freelancer.payment_status === "Invalid" && (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                                   Pending
                                 </span>
                               )}
-                              {freelancer.payment_status === "Approved" && (
+                              {freelancer.payment_status === "Valid" && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                  Approved
-                                </span>
-                              )}
-                              {freelancer.payment_status === "Rejected" && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                  Rejected
+                                  Verified
                                 </span>
                               )}
                             </div>
@@ -174,19 +169,14 @@ export default function Home() {
                               </p>
                             </div>
                             <div>
-                              {freelancer.payment_status === "pending" && (
+                              {freelancer.payment_status === "Invalid" && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                                   Pending
                                 </span>
                               )}
-                              {freelancer.payment_status === "verified" && (
+                              {freelancer.payment_status === "Valid" && (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                   Verified
-                                </span>
-                              )}
-                              {freelancer.payment_status === "rejected" && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                  Rejected
                                 </span>
                               )}
                             </div>

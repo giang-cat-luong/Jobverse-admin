@@ -23,6 +23,17 @@ import Error from "@/app/error";
 import Image from "next/image";
 import { LandingImage } from "@/constants/images";
 
+function extractRealImageUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const realUrl = u.searchParams.get("url");
+    return realUrl ? decodeURIComponent(realUrl) : url;
+  } catch (err) {
+    console.log("err", err);
+    return url;
+  }
+}
+
 export function FreelancerTable() {
   const router = useRouter();
   const { success_message, error_message } = useNotification();
@@ -42,7 +53,7 @@ export function FreelancerTable() {
   const { trigger: approveRequest } = usePrivatePost(
     API_ROUTES.apply_freelance.verify_freelancer
   );
-  const { trigger: rejectRequest } = usePrivatePost(
+   const { trigger: rejectRequest } = usePrivatePost(
     API_ROUTES.apply_freelance.reject_request
   );
 
@@ -69,13 +80,18 @@ export function FreelancerTable() {
     }
   };
 
-  const handleReject = (id: string, e: React.MouseEvent) => {
+  const handleReject = async(user_id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    success_message(
-      null,
-      null,
-      `Freelancer application #${id} has been rejected.`
-    );
+    setLoadingAction({ userId: user_id, type: "reject" });
+    try {
+      await rejectRequest({ user_id });
+      await mutate();
+      success_message(null, null, `Reject freelancer #${user_id}`);
+    } catch {
+      error_message(null, null, `Failed to approve freelancer #${user_id}`);
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
   const handleView = (id: string) => {
@@ -84,16 +100,10 @@ export function FreelancerTable() {
 
   const getPaymentStatusBadge = (status: string) => {
     switch (status) {
-      case "Verified":
+      case "Valid":
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
             Verified
-          </Badge>
-        );
-      case "Rejected":
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
-            Rejected
           </Badge>
         );
       default:
@@ -105,12 +115,18 @@ export function FreelancerTable() {
     }
   };
 
-  const getApplicationStatusBadge = (status: boolean) => {
+  const getApplicationStatusBadge = (status: string) => {
     switch (status) {
-      case true:
+      case "Verified":
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-            Verified
+            Approved
+          </Badge>
+        );
+      case "Rejected":
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
+            Rejected
           </Badge>
         );
       default:
@@ -151,7 +167,10 @@ export function FreelancerTable() {
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full overflow-hidden">
                       <Image
-                        src={LandingImage.avatar}
+                        src={
+                          extractRealImageUrl(freelancer.avatar_url) ||
+                          LandingImage.avatar
+                        }
                         alt={freelancer.display_name}
                         width={40}
                         height={40}
@@ -174,7 +193,7 @@ export function FreelancerTable() {
                   {getPaymentStatusBadge(freelancer.payment_status)}
                 </TableCell>
                 <TableCell>
-                  {getApplicationStatusBadge(freelancer.apply_status)}
+                  {getApplicationStatusBadge(freelancer.is_verified)}
                 </TableCell>
                 <TableCell>
                   <div
@@ -190,7 +209,7 @@ export function FreelancerTable() {
                       <Eye className="h-4 w-4 mr-1" />
                       View
                     </Button>
-                    {freelancer.apply_status === false && (
+                    {freelancer.is_verified === "Pending" && (
                       <>
                         <Button
                           variant="outline"

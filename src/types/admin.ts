@@ -28,8 +28,7 @@ export interface FreelancerApplication {
   district_or_subdistrict: string;
   zip_code: string;
   payment_status: string;
-  apply_status: boolean;
-  is_verified: boolean;
+  is_verified: string;
   created_at: string;
 }
 

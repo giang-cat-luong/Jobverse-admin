@@ -72,7 +72,8 @@ export interface FreelancerRequest {
   username: string;
   bio: string;
   avatar_url: string;
-  is_verified: boolean;
+  is_verified: string;
   member_since: string;
   roles: string[];
+  payment_status:string;
 }

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LandingImage } from "@/constants/images";
-import { usePrivateFetchParams, usePrivatePost } from "@/hooks/api-hooks";
+import { usePrivateFetchParams, usePrivatePost, usePrivatePut } from "@/hooks/api-hooks";
 import useNotification from "@/hooks/useNotification";
 import { FreelancerApplication } from "@/types/admin";
 import { FreelancerRequest } from "@/types/freelancerRequest";
@@ -50,6 +50,9 @@ export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
   const { trigger: rejectRequest } = usePrivatePost(
     API_ROUTES.apply_freelance.reject_request
   );
+  const { trigger: approvePayment } = usePrivatePut(
+    API_ROUTES.apply_freelance.approve_payment
+  );
 
   const application = requestData?.user;
 
@@ -59,25 +62,45 @@ export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
     try {
       await approveRequest({ user_id });
       await mutate();
-      success_message(null, null, `Approved job #${user_id}`);
+      success_message(null, null, `Approved freelancer #${user_id}`);
     } catch {
-      error_message(null, null, `Failed to approve job #${user_id}`);
+      error_message(null, null, `Failed to approve freelancer #${user_id}`);
     } finally {
       setLoadingAction(null);
     }
   };
 
-  const handleReject = () => {
-    success_message(
-      null,
-      null,
-      `Freelancer application #${requestData?.user_id} has been rejected.`
-    );
+  const handleReject = async(user_id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoadingAction({ userId: user_id, type: "reject" });
+    try {
+      await rejectRequest({ user_id });
+      await mutate();
+      success_message(null, null, `Reject freelancer #${user_id}`);
+    } catch {
+      error_message(null, null, `Failed to approve freelancer #${user_id}`);
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
-  const getPaymentStatusBadge = (status: boolean) => {
+  const handleApprovePayment = async (user_id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLoadingAction({ userId: user_id, type: "approve" });
+    try {
+      await approvePayment({ user_id, status: "Valid" });
+      await mutate();
+      success_message(null, null, `Approved payment #${user_id}`);
+    } catch {
+      error_message(null, null, `Failed to approve payment #${user_id}`);
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
+  const getPaymentStatusBadge = (status: string) => {
     switch (status) {
-      case true:
+      case "Valid":
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
             Verified
@@ -92,12 +115,18 @@ export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
     }
   };
 
-  const getApplicationStatusBadge = (status: boolean) => {
+  const getApplicationStatusBadge = (status: string) => {
     switch (status) {
-      case true:
+      case "Verified":
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-            Verified
+            Approved
+          </Badge>
+        );
+      case "Rejected":
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
+            Rejected
           </Badge>
         );
       default:
@@ -141,12 +170,12 @@ export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
         </Button>
 
         <div className="flex items-center gap-2">
-          {requestData.is_verified === false && (
+          {requestData.is_verified === "Pending" && (
             <>
               <Button
                 variant="outline"
                 className="border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800"
-                onClick={handleReject}
+                onClick={(e) => handleReject(requestData.user_id, e)}
               >
                 <X className="h-4 w-4 mr-2" />
                 Reject Application
@@ -164,7 +193,13 @@ export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
               </Button>
             </>
           )}
-          {requestData.is_verified !== false && (
+          {requestData.is_verified === "Verified" && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Application Status:</span>
+              {getApplicationStatusBadge(requestData.is_verified)}
+            </div>
+          )}
+          {requestData.is_verified === "Rejected" && (
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Application Status:</span>
               {getApplicationStatusBadge(requestData.is_verified)}
@@ -382,18 +417,35 @@ export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
                     Payment Verification (10 bath fee)
                   </h3>
                   <div className="flex items-center gap-2">
-                    {getPaymentStatusBadge(requestData.is_verified)}
+                    {getPaymentStatusBadge(requestData.payment_status)}
                   </div>
                 </div>
 
-                {requestData.is_verified === false && (
-                  <div className="bg-amber-50 p-4 rounded-md">
-                    <p className="text-amber-800 mb-3">
-                      This freelancer should have paid a 10 bath registration
-                      fee. Please verify the payment before approving the
-                      application.
-                    </p>
-                  </div>
+                {requestData.payment_status === "Invalid" && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800"
+                      onClick={(e) =>
+                        handleApprovePayment(requestData.user_id, e)
+                      }
+                      disabled={
+                        loadingAction?.userId === requestData.user_id &&
+                        loadingAction?.type === "approve"
+                      }
+                    >
+                      <Check className="h-4 w-4 mr-1" />
+                      Approve
+                    </Button>
+                    <div className="bg-amber-50 p-4 rounded-md">
+                      <p className="text-amber-800 mb-3">
+                        This freelancer should have paid a 10 bath registration
+                        fee. Please verify the payment before approving the
+                        application.
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

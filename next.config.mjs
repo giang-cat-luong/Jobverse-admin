@@ -6,6 +6,7 @@ const nextConfig = {
       "images.unsplash.com",
       "azpet.com.vn",
       "fastwork.ibrowe.com",
+      "pottybuddy.co"
     ],
     remotePatterns: [
       {
