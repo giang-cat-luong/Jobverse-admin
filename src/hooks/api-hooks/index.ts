@@ -96,12 +96,25 @@ export const usePrivateImagePost = <T, D = unknown>(url: string) => {
       ).data
   );
 };
+export const usePrivatePostParams = <T, D = unknown>() => {
+  return useSWRMutation<T, AxiosError, string, { url: string; data: D }>(
+    "dynamic-post", 
+    async (_, { arg }) => (await axiosPrivate.post<T>(arg.url, arg.data)).data
+  );
+};
+
 
 // Private PUT
 export const usePrivatePut = <T, D = unknown>(url: string) => {
   return useSWRMutation<T, AxiosError, string, D>(
     url,
     async (url, { arg }) => (await axiosPrivate.put<T>(url, arg)).data
+  );
+};
+export const usePrivatePutParams = <T, D = unknown>() => {
+  return useSWRMutation<T, AxiosError, string, { url: string; data: D }>(
+    "dynamic-post", // key hợp lệ, bắt buộc
+    async (_, { arg }) => (await axiosPrivate.put<T>(arg.url, arg.data)).data
   );
 };
 
@@ -113,4 +126,11 @@ export const usePrivateDelete = <T, D = unknown>(url: string) => {
       (await axiosPrivate.delete<T>(url, { data: arg })).data
   );
 };
+export const usePrivateDeleteParams = <T, D = unknown>() => {
+  return useSWRMutation<T, AxiosError, string, { url: string; data: D }>(
+    "dynamic-delete", 
+    async (_, { arg }) => (await axiosPrivate.delete<T>(arg.url, { data: arg.data })).data
+  );
+};
+
 

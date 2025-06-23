@@ -1,3 +1,4 @@
+import LoadingMultiCircle from "@/components/LoadingMultiCircle";
 import {
   Card,
   CardContent,
@@ -5,6 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -22,28 +29,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Bank } from "@/types/bank";
-import { Filter, Search } from "lucide-react";
+import { Button } from "@radix-ui/themes";
+import { Edit, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react";
 
 interface BankingTableProps {
   banks: Bank[];
-  // onDeleteBank: (bankId: string) => void;
-  // onEditBank: (bank: Bank) => void;
+  onDeleteBank: (bankId: string) => void;
+  onEditBank: (bank: Bank) => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
   selectedCountry: string;
   onCountryChange: (country: string) => void;
-  countries: string[]; 
+  countries: string[];
+  isLoading: boolean;
 }
 
 export function BankingTable({
   banks,
-  // onDeleteBank,
-  // onEditBank,
+  onDeleteBank,
+  onEditBank,
   searchTerm,
   onSearchChange,
   selectedCountry,
   onCountryChange,
   countries,
+  isLoading,
 }: BankingTableProps) {
   return (
     <Card>
@@ -88,11 +98,19 @@ export function BankingTable({
               <TableHead>Bank name</TableHead>
               <TableHead>Country</TableHead>
               <TableHead>Global</TableHead>
-              {/* <TableHead className="text-right">Thao tác</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {banks.length === 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="text-center text-gray-500 py-6"
+                >
+                  <LoadingMultiCircle/>
+                </TableCell>
+              </TableRow>
+            ) : banks.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={4}
@@ -107,7 +125,7 @@ export function BankingTable({
                   <TableCell>{bank.name}</TableCell>
                   <TableCell>{bank.country}</TableCell>
                   <TableCell>{bank.is_global ? "✅" : "❌"}</TableCell>
-                  {/* <TableCell className="text-right">
+                  <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -121,7 +139,7 @@ export function BankingTable({
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => {
-                            if (confirm(`Xóa "${bank.name}"?`)) onDeleteBank(bank.id);
+                            onDeleteBank(bank.id);
                           }}
                           className="text-red-600"
                         >
@@ -130,7 +148,7 @@ export function BankingTable({
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               ))
             )}

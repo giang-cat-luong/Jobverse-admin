@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingCircle from "@/components/LoadingCircle";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import {
@@ -36,6 +37,7 @@ type BankFormValues = z.infer<typeof bankFormSchema>;
 
 interface BankFormProps {
   isOpen: boolean;
+  isMutating: boolean;
   onClose: () => void;
   onSave: (data: Omit<Bank, "id">) => void;
   editingBank?: Bank | null;
@@ -46,6 +48,7 @@ export function BankForm({
   onClose,
   onSave,
   editingBank,
+  isMutating,
 }: BankFormProps) {
   const { success_message, error_message } = useNotification();
 
@@ -151,11 +154,12 @@ export function BankForm({
                 type="button"
                 variant="outline"
                 onClick={handleClose}
+                disabled={isMutating}
               >
                 Cancel
               </Button>
               <Button type="submit">
-                {editingBank ? "Update" : "Add"}
+                {isMutating  ? <LoadingCircle/> : editingBank ? "Update" : "Add"}
               </Button>
             </DialogFooter>
           </form>

@@ -75,11 +75,6 @@ const SellerSidebar = () => {
                 label: "Freelance request",
               },
               {
-                href: "/membership",
-                icon: faCalendar,
-                label: "Membership",
-              },
-              {
                 href: "/banking-management",
                 icon: faBank,
                 label: "Banking management",

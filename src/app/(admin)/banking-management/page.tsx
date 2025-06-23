@@ -2,7 +2,12 @@
 
 import { API_ROUTES } from "@/api/endpoints";
 import { Button } from "@/components/ui/button";
-import { usePrivateFetchParams, usePrivatePost } from "@/hooks/api-hooks";
+import {
+  usePrivateFetchParams,
+  usePrivatePostParams,
+  usePrivatePutParams,
+  usePrivateDeleteParams,
+} from "@/hooks/api-hooks";
 import { useDebounce } from "@/hooks/useDebounce";
 import useNotification from "@/hooks/useNotification";
 import { Bank, BankingData } from "@/types/bank";
@@ -12,6 +17,8 @@ import { BankForm } from "./_components/BankForm";
 import { BankingTable } from "./_components/BankingTable";
 import { CountryStats } from "./_components/CountryStats";
 import { CSVImport } from "./_components/CSVImport";
+import { Pagination } from "@/components/Pagination"; // Đường dẫn tùy vị trí của bạn
+import Loading from "@/components/Loading";
 
 function buildQueryURL(base: string, params: Record<string, string>): string {
   const query = new URLSearchParams(params).toString();
@@ -24,30 +31,40 @@ const BankingManagementPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
 
-  const debouncedSearchTerm = useDebounce(searchTerm.trim(), 400); // ✅
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
 
+  const debouncedSearchTerm = useDebounce(searchTerm.trim(), 400);
   const { success_message, error_message } = useNotification();
 
-  // ✅ build params cho API search_bank
-  const queryParams: Record<string, string> = {};
+  const queryParams: Record<string, string> = {
+    page: String(currentPage),
+    page_size: String(pageSize),
+  };
+
   if (debouncedSearchTerm) queryParams.name = debouncedSearchTerm;
   if (selectedCountry !== "all") queryParams.country = selectedCountry;
 
   const queryUrl = buildQueryURL(API_ROUTES.bank.search_bank, queryParams);
-  const { data, mutate } = usePrivateFetchParams<BankingData>(queryUrl);
+  const { data,isLoading, mutate } = usePrivateFetchParams<BankingData>(queryUrl);
   const banks: Bank[] = data?.banks || [];
+  const totalPages = data?.total_pages || 1;
 
   const uniqueCountries = Array.from(
-  new Set(banks.map((bank) => bank.country))
-).filter(Boolean);
+    new Set(banks.map((bank) => bank.country))
+  ).filter(Boolean);
 
+  const { trigger: addBank, isMutating: isAddMutating } =
+    usePrivatePostParams();
+  const { trigger: updateBank, isMutating: isUpdateMutating } =
+    usePrivatePutParams();
+  const { trigger: deleteBank } =
+    usePrivateDeleteParams();
 
-  const { trigger: addBank } = usePrivatePost(API_ROUTES.bank.add_bank);
-
-  // const handleEditBank = (bank: Bank) => {
-  //   setEditingBank(bank);
-  //   setIsFormOpen(true);
-  // };
+  const handleEditBank = (bank: Bank) => {
+    setEditingBank(bank);
+    setIsFormOpen(true);
+  };
 
   const handleCloseForm = () => {
     setEditingBank(null);
@@ -56,19 +73,42 @@ const BankingManagementPage = () => {
 
   const handleSaveBank = async (data: Omit<Bank, "id">) => {
     try {
-      await addBank(data);
-      success_message(null, null, "Bank added successfully");
+      if (editingBank) {
+        await updateBank({
+          url: `${API_ROUTES.bank.update_bank}/${editingBank.id}`,
+          data,
+        });
+        success_message(null, null, "Bank updated successfully");
+      } else {
+        await addBank({
+          url: API_ROUTES.bank.add_bank,
+          data,
+        });
+        success_message(null, null, "Bank added successfully");
+      }
       mutate();
       handleCloseForm();
     } catch (err) {
-      error_message(null, null, "Failed to add bank");
+      error_message(
+        null,
+        null,
+        editingBank ? "Failed to update bank" : "Failed to add bank"
+      );
     }
   };
 
-  // const handleDeleteBank = (bankId: string) => {
-  //   // TODO: Implement DELETE API
-  //   mutate();
-  // };
+  const handleDeleteBank = async (bankId: string) => {
+    try {
+      await deleteBank({
+        url: `${API_ROUTES.bank.delete_bank}/${bankId}`,
+        data: {},
+      });
+      success_message(null, null, "Bank deleted successfully");
+      mutate();
+    } catch (err) {
+      error_message(null, null, "Failed to delete bank");
+    }
+  };
 
   return (
     <div className="flex-1">
@@ -85,7 +125,9 @@ const BankingManagementPage = () => {
             Add Bank
           </Button>
         </div>
+
         <CountryStats banks={banks} />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
             <CSVImport onImportSuccess={() => mutate()} />
@@ -93,14 +135,32 @@ const BankingManagementPage = () => {
           <div className="lg:col-span-2">
             <BankingTable
               banks={banks}
-              // onDeleteBank={handleDeleteBank}
-              // onEditBank={handleEditBank}
+              onDeleteBank={handleDeleteBank}
+              onEditBank={handleEditBank}
               searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
+              onSearchChange={(term) => {
+                setCurrentPage(1);
+                setSearchTerm(term);
+              }}
               selectedCountry={selectedCountry}
-              onCountryChange={setSelectedCountry}
+              onCountryChange={(country) => {
+                setCurrentPage(1);
+                setSelectedCountry(country);
+              }}
               countries={uniqueCountries}
+              isLoading={isLoading}
             />
+
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -109,6 +169,7 @@ const BankingManagementPage = () => {
           onClose={handleCloseForm}
           onSave={handleSaveBank}
           editingBank={editingBank}
+          isMutating={isAddMutating || isUpdateMutating}
         />
       </div>
     </div>

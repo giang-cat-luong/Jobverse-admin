@@ -26,6 +26,10 @@ export interface Bank {
 }
 export interface BankingData {
   banks: Bank[];
+  page: number,
+    page_size: number,
+    total_items: number,
+    total_pages: number
 }
 
 export type BankRequest = Omit<Bank, "id">;

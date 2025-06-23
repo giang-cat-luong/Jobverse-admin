@@ -35,6 +35,8 @@ export const API_ROUTES = {
     get_bank: "admin/banks",
     search_bank:"admin/banks/search",
     add_bank:"admin/banks",
+    update_bank:"/admin/banks",
+    delete_bank:"/admin/banks",
     import_bank:"/admin/banks/import"
   }
 };
