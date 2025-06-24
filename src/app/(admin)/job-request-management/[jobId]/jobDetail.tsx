@@ -1,6 +1,5 @@
 import JobApplicationDetail from "@/components/JobApplicationDetail";
 import SellerHeader from "@/components/SellerHeader";
-import { mockFreelancerApplications } from "@/lib/mock-data";
 
 interface Props {
   jobId: string;

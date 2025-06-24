@@ -22,14 +22,17 @@ export const API_ROUTES = {
     login: "/admin/login",
   },
   apply_freelance: {
-    get_all: "/admin/jobs/pending",
+    get_job_all: "/admin/jobs/all",
+    get_job_status: "/admin/jobs/by-status",
     approve_request: "/admin/jobs/approve",
     reject_request: "/admin/profile/deny/freelancer",
     get_job_detail: "/admin/jobs/detail",
-    get_freelancer_list: "/admin/profile/verify/freelancer/list",
+    get_freelancer_list_all: "/admin/profile/verify/freelancer/list",
+    get_freelancer_list_status: "/admin/profile/verify/freelancer/by-status",
     get_freelancer_detail: "/admin/profile/verify/freelancer",
     verify_freelancer: "/admin/profile/verify/freelancer",
-    approve_payment: "/admin/profile/payment/status"
+    approve_payment: "/admin/profile/payment/status",
+    deny_job:"/admin/jobs/deny"
   },
   bank:{
     get_bank: "admin/banks",

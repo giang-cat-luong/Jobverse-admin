@@ -1,35 +1,86 @@
 export interface FreelancerApplication {
-  user_id: string;
-  sourceTypes: string[];
-  avatar_url: string;
-  username: string;
-  display_name: string;
-  bio: string;
-  freelancer_type: string;
-  apply_fee: boolean;
-  birth_date: string;
-  email: string;
-  countryType: string;
-  country: string;
-  card_number: string;
-  card_address_details: string;
-  card_zip_code: string;
-  card_subdistrict_or_district: string;
-  card_district_or_subdistrict: string;
-  card_province: string;
-  front_card: string;
-  back_card: string;
-  title: string;
-  name: string;
-  surname: string;
-  address_details: string;
-  province: string;
-  subdistrict_or_district: string;
-  district_or_subdistrict: string;
-  zip_code: string;
-  payment_status: string;
-  is_verified: string;
-  created_at: string;
+  freelancers: [
+    {
+      user_id: string;
+      sourceTypes: string[];
+      avatar_url: string;
+      username: string;
+      display_name: string;
+      bio: string;
+      freelancer_type: string;
+      apply_fee: boolean;
+      birth_date: string;
+      email: string;
+      countryType: string;
+      country: string;
+      card_number: string;
+      card_address_details: string;
+      card_zip_code: string;
+      card_subdistrict_or_district: string;
+      card_district_or_subdistrict: string;
+      card_province: string;
+      front_card: string;
+      back_card: string;
+      title: string;
+      name: string;
+      surname: string;
+      address_details: string;
+      province: string;
+      subdistrict_or_district: string;
+      district_or_subdistrict: string;
+      zip_code: string;
+      payment_status: string;
+      is_verified: string;
+      created_at: string;
+    }
+  ];
+  total_items: number;
+  total_pages: number;
+  page: number;
+  page_size: number;
+}
+export interface FreelancerApplicationWithWrapper {
+  data: {
+    freelancers: [
+      {
+        user_id: string;
+        sourceTypes: string[];
+        avatar_url: string;
+        username: string;
+        display_name: string;
+        bio: string;
+        freelancer_type: string;
+        apply_fee: boolean;
+        birth_date: string;
+        email: string;
+        countryType: string;
+        country: string;
+        card_number: string;
+        card_address_details: string;
+        card_zip_code: string;
+        card_subdistrict_or_district: string;
+        card_district_or_subdistrict: string;
+        card_province: string;
+        front_card: string;
+        back_card: string;
+        title: string;
+        name: string;
+        surname: string;
+        address_details: string;
+        province: string;
+        subdistrict_or_district: string;
+        district_or_subdistrict: string;
+        zip_code: string;
+        payment_status: string;
+        is_verified: string;
+        created_at: string;
+      }
+    ];
+    total_items: number;
+    total_pages: number;
+    page: number;
+    page_size: number;
+  };
 }
 
 export interface Category {
@@ -178,5 +229,5 @@ export interface Job {
   socials: any[];
   websites: any[];
   related_jobs: any[];
-  approval_status?: 'pending' | 'approved' | 'rejected';
+  approval_status?: "pending" | "approved" | "rejected";
 }

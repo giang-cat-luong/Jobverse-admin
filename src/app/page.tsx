@@ -5,32 +5,28 @@ import SellerHeader from "@/components/SellerHeader";
 import SellerSidebar from "@/components/SellerSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePrivateFetchParams } from "@/hooks/api-hooks";
-import { mockFreelancerApplications } from "@/lib/mock-data";
 import { FreelancerApplication } from "@/types/admin";
 import { RequestFreelancer } from "@/types/requestFreelancer";
 import {
-  Banknote,
   Briefcase,
-  Check,
   FileText,
   PersonStanding,
-  Users,
-  X,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
   const { data: freelancerApplications, isLoading: isLoadingFreelancers } =
-    usePrivateFetchParams<FreelancerApplication[]>(
-      API_ROUTES.apply_freelance.get_freelancer_list
+    usePrivateFetchParams<FreelancerApplication>(
+      API_ROUTES.apply_freelance.get_freelancer_list_all
     );
 
   const { data: jobApplications, isLoading: isLoadingJobs } =
     usePrivateFetchParams<RequestFreelancer>(
-      API_ROUTES.apply_freelance.get_all
+      API_ROUTES.apply_freelance.get_job_all
     );
 
-  const freelancers = freelancerApplications || [];
+  const freelancers = freelancerApplications?.freelancers || [];
   const jobs = jobApplications?.data.jobs || [];
 
   const totalFreelancerApplications = freelancers.length;

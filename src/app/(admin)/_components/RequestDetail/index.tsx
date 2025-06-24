@@ -217,10 +217,10 @@ export function FreelancerDetail({ requestId }: FreelancerDetailProps) {
             <div className="flex justify-center mb-4">
               <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-admin-light-purple">
                 <Image
-                  src={LandingImage.avatar}
+                  src={application.user.avatar_url || LandingImage.avatar}
                   alt={application.user.display_name}
-                  width={46}
-                  height={40}
+                  width={120}
+                  height={120}
                   className="h-full w-full object-cover"
                 />
               </div>

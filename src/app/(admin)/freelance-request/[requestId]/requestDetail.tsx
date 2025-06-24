@@ -1,5 +1,4 @@
 import SellerHeader from "@/components/SellerHeader";
-import { mockFreelancerApplications } from "@/lib/mock-data";
 import { FreelancerDetail } from "../../_components/RequestDetail";
 
 interface Props {

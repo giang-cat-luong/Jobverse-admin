@@ -103,15 +103,31 @@ const JobApplicationDetail = ({ jobId }: Props) => {
     });
   };
 
-  const getStatusBadge = (status?: string) => {
+  const getStatusBadge = (status: number) => {
     switch (status) {
-      case "approved":
-        return <Badge className="bg-green-100 text-green-800">Approved</Badge>;
-      case "rejected":
-        return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
+      case 0:
+        return (
+          <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">
+            Draft
+          </Badge>
+        );
+      case 1:
+        return (
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+            Pending
+          </Badge>
+        );
+      case 2:
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+            Approved
+          </Badge>
+        );
       default:
         return (
-          <Badge className="bg-amber-100 text-amber-800">Pending Review</Badge>
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
+            Rejected
+          </Badge>
         );
     }
   };
@@ -140,7 +156,7 @@ const JobApplicationDetail = ({ jobId }: Props) => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Jobs
           </Button>
-          {getStatusBadge(job.approval_status)}
+          {getStatusBadge(job.status)}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -173,20 +189,24 @@ const JobApplicationDetail = ({ jobId }: Props) => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {job.images.map((image) => (
-                    <div key={image.id} className="relative">
-                      <img
-                        src={image.image_url}
-                        alt={image.alt}
-                        className="w-full h-32 object-cover rounded-lg"
-                      />
-                      {image.is_cover_photo && (
-                        <Badge className="absolute top-2 left-2 bg-blue-100 text-blue-800">
-                          Cover
-                        </Badge>
-                      )}
-                    </div>
-                  ))}
+                  {job.images?.length > 0 ? (
+                    job.images.map((image) => (
+                      <div key={image.id} className="relative">
+                        <img
+                          src={image.image_url}
+                          alt={image.alt}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        {image.is_cover_photo && (
+                          <Badge className="absolute top-2 left-2 bg-blue-100 text-blue-800">
+                            Cover
+                          </Badge>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500">No images available.</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -210,24 +230,30 @@ const JobApplicationDetail = ({ jobId }: Props) => {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {job.packages.map((pkg) => (
-                    <div key={pkg.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-2">
-                          <Package className="h-4 w-4" />
-                          <h4 className="font-semibold">{pkg.package_name}</h4>
+                  {job.packages && job.packages.length > 0 ? (
+                    job.packages.map((pkg) => (
+                      <div key={pkg.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-2">
+                            <Package className="h-4 w-4" />
+                            <h4 className="font-semibold">
+                              {pkg.package_name}
+                            </h4>
+                          </div>
+                          <div className="text-lg font-bold">
+                            {formatPrice(pkg.price)}
+                          </div>
                         </div>
-                        <div className="text-lg font-bold">
-                          {formatPrice(pkg.price)}
+                        <p className="text-gray-600 mb-2">{pkg.description}</p>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <Clock className="h-3 w-3" />
+                          {Math.floor(pkg.execution_time / 1440)} days delivery
                         </div>
                       </div>
-                      <p className="text-gray-600 mb-2">{pkg.description}</p>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Clock className="h-3 w-3" />
-                        {Math.floor(pkg.execution_time / 1440)} days delivery
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-gray-500">No packages available.</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -239,18 +265,22 @@ const JobApplicationDetail = ({ jobId }: Props) => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {job.worksteps.map((step, index) => (
-                    <div key={step.id} className="flex gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-semibold">
-                        {index + 1}
+                  {job.worksteps && job.worksteps.length > 0 ? (
+                    job.worksteps.map((step, index) => (
+                      <div key={step.id} className="flex gap-4">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-semibold">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="whitespace-pre-wrap">
+                            {step.description}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="whitespace-pre-wrap">
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-gray-500">No work steps provided.</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -324,36 +354,38 @@ const JobApplicationDetail = ({ jobId }: Props) => {
 
             {/* Action Buttons */}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button
-                  className="w-full bg-green-600 hover:bg-green-700"
-                  onClick={(e) => handleApprove(job.id, e)}
-                  disabled={
-                    loadingAction?.jobId === job.id &&
-                    loadingAction?.type === "approve"
-                  }
-                >
-                  <Check className="h-4 w-4 mr-2" />
-                  Approve Job
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="w-full"
-                  onClick={(e) => handleReject(job.id, e)}
-                  disabled={
-                    loadingAction?.jobId === job.id &&
-                    loadingAction?.type === "reject"
-                  }
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Reject Job
-                </Button>
-              </CardContent>
-            </Card>
+            {job.status === 1 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    onClick={(e) => handleApprove(job.id, e)}
+                    disabled={
+                      loadingAction?.jobId === job.id &&
+                      loadingAction?.type === "approve"
+                    }
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Approve Job
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={(e) => handleReject(job.id, e)}
+                    disabled={
+                      loadingAction?.jobId === job.id &&
+                      loadingAction?.type === "reject"
+                    }
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Reject Job
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
