@@ -7,12 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePrivateFetchParams } from "@/hooks/api-hooks";
 import { FreelancerApplication } from "@/types/admin";
 import { RequestFreelancer } from "@/types/requestFreelancer";
-import {
-  Briefcase,
-  FileText,
-  PersonStanding,
-  Users
-} from "lucide-react";
+import { Briefcase, FileText, PersonStanding, Users } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -181,12 +176,19 @@ export default function Home() {
                           className="flex items-center space-x-4"
                         >
                           <div className="h-10 w-10 rounded-full overflow-hidden">
-                            <img
-                              src={job.images[0].image_url}
-                              alt={job.title}
-                              className="h-full w-full object-cover"
-                            />
+                            {job.images && job.images.length > 0 ? (
+                              <img
+                                src={job.user.avatar_url}
+                                alt={job.title}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full bg-gray-300 flex items-center justify-center text-xs text-gray-600">
+                                No Image
+                              </div>
+                            )}
                           </div>
+
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium truncate">
                               {`${job.title}`}

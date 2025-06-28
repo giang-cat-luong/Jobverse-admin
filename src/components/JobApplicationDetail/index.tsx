@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { API_ROUTES } from "@/api/endpoints";
+import Error from "@/app/error";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,22 +12,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { usePrivateFetchParams, usePrivatePost } from "@/hooks/api-hooks";
+import useNotification from "@/hooks/useNotification";
+import { Job } from "@/types/admin";
 import {
   ArrowLeft,
   Check,
-  X,
   Clock,
-  Star,
   Package,
-  MapPin,
+  Star,
+  X
 } from "lucide-react";
-import { Job } from "@/types/admin";
-import useNotification from "@/hooks/useNotification";
 import { useRouter } from "next/navigation";
-import { usePrivateFetchParams, usePrivatePost } from "@/hooks/api-hooks";
-import { API_ROUTES } from "@/api/endpoints";
+import { useState } from "react";
 import Loading from "../Loading";
-import Error from "@/app/error";
 
 type Props = {
   jobId: string;
@@ -174,7 +173,8 @@ const JobApplicationDetail = ({ jobId }: Props) => {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold">
-                      {formatPrice(job.packages[0]?.price || "0")}
+                      {formatPrice(job.packages?.[0]?.price || "0")}
+
                     </div>
                     <div className="text-sm text-gray-500">Starting from</div>
                   </div>
