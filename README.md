@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛠️ Jobverse Admin Dashboard
 
-## Getting Started
+The **Jobverse Admin Dashboard** is the control center of the **Jobverse ecosystem** — providing administrators with tools to **manage users, jobs, payments, reports, and platform analytics** in real time.  
+It’s designed to help Jobverse maintain a **secure, transparent, and scalable** environment for both freelancers and clients.
 
-First, run the development server:
+---
+
+## 🎯 Overview
+
+**Jobverse Admin Dashboard** allows platform administrators to:
+- Oversee user accounts and activity.
+- Moderate job posts and disputes.
+- Manage payments, reports, and analytics.
+- Configure global platform settings.
+- Monitor system health and logs.
+
+---
+
+## 🚀 Key Features
+
+### 👤 User Management
+- View, verify, or suspend user accounts.  
+- Role-based permissions (Admin, Moderator, Support).  
+- User activity and engagement tracking.
+
+### 💼 Job Management
+- Approve or reject job listings.  
+- Track job lifecycle and transactions.  
+- Manage job categories and tags.
+
+### 💰 Payment & Finance
+- Monitor all payment transactions.  
+- Handle withdrawal requests and commissions.  
+- Generate revenue and tax reports.
+
+### 📊 Analytics & Reports
+- Real-time charts for platform metrics.  
+- Growth insights: active users, completed jobs, revenue trends.  
+- Export reports as CSV/PDF.
+
+### ⚙️ System Settings
+- Manage platform configuration (fees, limits, roles).  
+- Control access levels and security policies.  
+- System logs and error tracking.
+
+---
+
+## 🏗️ Technology Stack
+
+| Component | Technology |
+|------------|-------------|
+| **Frontend** | React / Next.js / Tailwind CSS | Tanstack |
+| **Backend** | Rust / Nginx |
+| **Database** | PostgreSQL |
+| **Authentication** | JWT / NextAuth |
+| **Charts & Data Viz** | Recharts / Chart.js |****
+| **Deployment** | Docker + CI/CD  |
+
+---
+
+## ⚙️ Installation & Setup
+
+To run the Admin Dashboard locally:
 
 ```bash
+# Clone the admin repo
+git clone https://github.com/<username>/jobverse-admin.git
+cd jobverse-admin
+
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Open in browser
+http://localhost:3001
